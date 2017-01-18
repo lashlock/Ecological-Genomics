@@ -29,3 +29,5 @@ Example of embedding an image:
 ![](URL)
 ```
 
+This is a picture of Nereocystis
+![](https://cloud.githubusercontent.com/assets/25162866/22071570/892988be-dd6d-11e6-82a9-da870be216a2.jpg)
