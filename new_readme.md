@@ -22,3 +22,10 @@ Implementation:
 
 
 [Pespeni Lab Website](https://blog.uvm.edu/mpespeni/)
+
+Example of embedding an image:
+
+```
+![](URL)
+```
+
