@@ -74,7 +74,169 @@ Notes from class material,and class project will populate this notebook.
 
 ------
 <div id='id-section1'/>
-### Page 1:   
+### Page 1: 
+
+**Info update: Whole Genome Sequencing**
+
+> Applications   
+>
+> Prior considerations
+>
+> Methods
+
+- High power and resolution 
+
+Reference Genome necessary?
+
+- No? -> De Novo assembly
+  - Adaptations
+  - Genome expression
+- Yes? -> Looking for important variation
+  - Epigenetic modifications
+  - Analyze DNA --> protein process
+  - Gene expression studies
+
+Do you have the necessary resources?
+
+- Money
+- Computational resources
+  - Core facility
+  - Command line
+  - Programming language (Python/Perl)
+
+Limitations of your data:
+
+- Polymorphic genes or Paralogs (core, highly conserved genes)
+- Rapidly evolving genes  and Large gene families (poor representation)
+- Sequencing from one individual  or pooled samples
+- Impossible to sequence all aspects of the genome
+  - heterochromatic regions  (DNA too tied up in chromatin to be sequenced)
+  - highly repetitive regions (hard to tell where it should go in your assembly)
+
+Prior Considerations:
+
+- Sequencing platform
+  - Short reads (Illumina Seq 150bp, or SOLID)
+  - Long reads (PacBio 5kb, Iion Torrent 500bp, Illumina Moleculo up to 10 kb)
+- Knowledge of organism
+  - Genome size (K-mer approach)
+  - Repeat content
+  - Error rate of sequencing 
+  - Degree of genome duplications (polyploidy)
+- Methods
+  - Wet lab procedures
+    - Sample (high quality DNA), avoid energetically active tissue (lots of mitochondrial DNA), avoid gut and skin (DNA from other orgs)
+    - Quantity: 1mg -> 6ug
+  - Library Prep
+    - single or paired end sequences
+    - Mate pair (ends far apart you put together)
+    - Assemble paired reads into a contig
+    - Assemble scaffold
+    - N approximation of gaps using long reads
+  - Before Library Prep
+    - GC content
+    - Repeat abundane
+    - Duplicate reads
+  - Quality control
+    - Reaper
+    - N50 contig in the middle (50% longer 50% shorter) - the number of bp in that contig)
+  - Annotation
+    - Automated or Manual
+
+**Info Update: RNA seq**
+
+> Advantage   
+>
+> Limitation
+>
+> Workflow
+>
+> > set-up
+> >
+> > wet lab
+> >
+> > seq strategy
+> >
+> > bio info
+> >
+> > statistical measures
+
+Advantages:
+
+- Differential gene expression
+- Allele specific expression (environmental response/ adaptation)
+- Functionally relevant subset of the genome 
+- Wide range of expression value
+- Info re splicing events
+
+Limitations: 
+
+- Does not necessarily correlate with protein abundance
+- Tissue specific
+
+Work Flow:
+
+- Purpose:
+  - coding or regulatory non coding? 
+  - Reference genome?
+  - Alternative splicing?
+  - Technology?
+  - Population level or treatment level comparison
+- Stats:
+  - Biological replication
+  - Tissue choice
+  - Coordinated time of sampling
+  - Small organism (pooled samples... )
+- Wet Lab:
+  - RNAse free environment
+  - Treat with DNAse
+  - eliminate rRNA 
+  - Enrich RNA with poly-A tail
+  - cDNA synthesis: oligodT primer (complementary to poly-A tail). Also add reverse transcriptase, to make DNA from the mRNA
+  - Library Prep: single vs paired end. 
+- Sequencing platform
+  - pyrosequencing (Roche), Ion Torrent, Illumina HiSeq
+    - Roche - incorrect homopolymer
+    - GC content template 
+- Sequencing coverage
+  - @ least 100 million bp (100bp)
+  - 10 million
+- Programs: 
+  - unix
+  - Python
+  - R
+
+**Info Update: Amplicon Seq**
+
+Library Prep
+
+- Extract genomic DNA
+- 1st PCR
+  - amplify targeted gene using specified primers
+    - (using 16s as an example)
+    - variable and conserved regions (200-600bp)
+- Clean up
+  - using gel extraction or column
+- PCR
+  - adding bar codes and adapters for sequencing
+- Clean up
+- Pool samples
+- Sequencing
+
+Sequencing: 
+
+- 454 (outdated)
+- miseq: paired end sequencing, 300bp
+
+Data Analysis:
+
+- Trim adapters
+- Align reads using conserved sequences
+
+**Info Update: GBS/RAD Seq**
+
+
+
 ------
 <div id='id-section2'/>
 ### Page 2:   
