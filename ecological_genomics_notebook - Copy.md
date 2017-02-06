@@ -294,7 +294,9 @@ Data Analysis:
    - Starting at second line is our data
    - Line after plus sign indicates quality of that nucleotide (in one character per quality score so it alligns perfectly with your sequence)
      - phred score
-   - ​
+   - Input Read Pairs: 32170422 Both Surviving: 27242302 (84.68%) Forward Only Surviving: 3624951 (11.27%) Reverse Only Surviving: 601581 (1.87%) Dropped: 701588 (2.18%)
+   - Put clean paired fastqc files in fastqc_out directory
+   - also put them on my zoo.uvm.edu~/lashlock
 
    ​
 
