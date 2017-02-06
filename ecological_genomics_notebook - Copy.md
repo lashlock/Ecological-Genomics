@@ -12,7 +12,7 @@ Notes from class material,and class project will populate this notebook.
 
 ### Table of contents for 60 entries (Format is *Page: Date(with year-month-day). Title*)        
 * [Page 1: 2017-02-01](#id-section1). Sequencing strategies applied to biological questions
-* [Page 2: 2017-02-06](#id-section2).     
+* [Page 2: 2017-02-06](#id-section2).  RNAseq   
 * [Page 3: 2017-02-08](#id-section3). 
 * [Page 4: 2017-02-13](#id-section4) . 
 * [Page 5: 2017-02-15](#id-section5). 
@@ -240,6 +240,33 @@ Data Analysis:
 ------
 <div id='id-section2'/>
 ### Page 2:   
+
+**RNAseq workflow**
+
+1. Clean reads *fastq*
+   1. Adapters
+   2. Nucleotide quality
+   3. Length
+2. Evaluate quality
+3. Assemble De Novo transcriptome *fasta*
+   1. Evaluate assembly
+      1. compare to closely related species or core set of genes
+4. Annotate reference
+   1. nr (gene annotation)
+   2. uniprot (protein) database
+   3. Gene Ontology (GO) 
+   4. ​
+5. Map reads to de novo transcriptome
+   1. Generates a lot of alignment files *sam*
+6. Extract read count info (# of reads that map to each contig or each sample) and Identify SNPs 
+7. Differential gene expression analyses 
+   1. co expression network analyses
+8. Population genomics 
+   1. genetic differentiation
+   2. population structure
+   3. demographic history
+   4. signatures of selection
+
 ------
 <div id='id-section3'/>
 ### Page 3:   
