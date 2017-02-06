@@ -244,28 +244,61 @@ Data Analysis:
 **RNAseq workflow**
 
 1. Clean reads *fastq*
+
    1. Adapters
    2. Nucleotide quality
    3. Length
+
 2. Evaluate quality
+
 3. Assemble De Novo transcriptome *fasta*
+
    1. Evaluate assembly
       1. compare to closely related species or core set of genes
+
 4. Annotate reference
+
    1. nr (gene annotation)
    2. uniprot (protein) database
    3. Gene Ontology (GO) 
    4. ​
+
 5. Map reads to de novo transcriptome
+
    1. Generates a lot of alignment files *sam*
+
 6. Extract read count info (# of reads that map to each contig or each sample) and Identify SNPs 
+
 7. Differential gene expression analyses 
+
    1. co expression network analyses
+
 8. Population genomics 
+
    1. genetic differentiation
    2. population structure
    3. demographic history
    4. signatures of selection
+
+   -----------------------------------
+
+   Logging onto the server: Host name: pbio381.uvm.edu
+
+   UN and PW same as netID
+
+   - Each file has the individual number, disease level (0-5), sample date, paired files (left and right paired ends)
+   - my files to clean 08__5-14__S_1_R1 and R2
+   - seeing the top of a zipped file 
+     - zcat filename | head
+   - First line is unique identifier (sequencer, adaptors)
+   - Starting at second line is our data
+   - Line after plus sign indicates quality of that nucleotide (in one character per quality score so it alligns perfectly with your sequence)
+     - phred score
+   - ​
+
+   ​
+
+   ​
 
 ------
 <div id='id-section3'/>
