@@ -305,6 +305,68 @@ Data Analysis:
 ------
 <div id='id-section3'/>
 ### Page 3:   
+
+**Info update: transcriptomics**
+
+- Useful when studying non-model organisms  or non traditional model organisms
+- Helpful for finding genes responding to multiple stimuli
+- Novel transcripts w/o homologs in closely related model organisms
+
+Methods
+
+- Microarrays
+  - Older technology
+  - Easy to use, and simple analyses
+- RNAseq
+  - Newer technology
+  - genome wide ecological transcripts
+  - Data processing is more intensive and time consuming (because more data?)
+
+Questions:
+
+1) How much variation is there in gene expression and how is it structured?
+
+- Evolutionary Processes - Gene expression is heritable and natural selection can act on it
+    - can also be facilitated by epigenetics
+    - Qst and Fst comparisons
+    - eQTL
+- Macroevolution - 
+    - Drift, selection, bottlenecks
+
+2) How do environmental stimuli affect gene expression?
+
+- Abiotic stress
+- Environmental heterogeneity in time or space
+- host-parasite interactions 
+- Selective biotic and abiotic interactions
+  - Digging deeper to identify the molecular basis of response
+  - how the environment affects the genome
+  - how the environment affects phenotypic plasticity
+- Considerations: need to be flash frozen... and must consider that it is only a snapshot of expression
+  - can use time course analyses to get around this
+
+3) How does gene expression affect phenotype?
+
+- Alternate phenotypes
+- Moving from correlation to causation
+  - transgenics, RNAi, Crisper/CAS9
+
+Future directions
+
+- RNAseq
+- Database for proposed ecological annotations
+
+Primary problems
+
+- Bias in signal
+- Heterologous arrays
+- Polyploidy
+- RNA pooling
+- Statistical analyses
+- Unannotated genes
+
+
+
 ------
 <div id='id-section4'/>
 ### Page 4:   
