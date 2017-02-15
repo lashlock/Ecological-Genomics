@@ -366,13 +366,67 @@ Primary problems
 - Unannotated genes
 
 
-
 ------
 <div id='id-section4'/>
-### Page 4:   
+### Page 4:    
+
+Missed class this day
+
+
+
 ------
 <div id='id-section5'/>
 ### Page 5:   
+
+**Info Update: SNPs and Population Genomics**
+
+- SNP data - expressed sequences
+
+1. Tissue
+   1. breadth of tissue from different developmental stages
+      1. This controls for exon skipping
+2. Pool samples and create your sequence libraries (30-100Million p.e. long reads)
+3. Process raw sequence data
+   1. Important for SNP detection
+4. Digital normalization
+   1. Remove high coverage reads and associated errors
+      1. Loss of quantitative info
+5. Assemble clean p.e. reads
+6. Prune assembled transcripts
+   1. Reduce DNA contaminations, noncoding DNA, and gene fragments
+7. Assembly evaluation using either a reference genome or conserved genes in other eukaryotic organisms
+8. SNP detection
+   1. Software: constant patterns of sequence variation
+      1. sequence errors - hopefully your software will eliminate reads of low frequency
+      2. Errors can also be found in homogeneous regions... amplified by PCR... can filter for these
+      3. Artifacts caused by InDels - filter SNP clusters near indels, quality scores
+9. SNP validation - primers
+   1. Use Sanger sequencing or mass spec to quality control a portion of your sequence data
+10. Applications
+    1. Differences in population structure
+    2. How natural selection is acting on particular loci
+11. Methods for Applications
+    1. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
+    2. Non outlier - Tests high Fst loci for other features associated with selection
+       1. Fitness advantage
+       2. Functional enrichment
+
+Command Line notes:
+
+The below renaming of SAM file needs to be done in the directory of your SAM file (I think it is in my scripts file) 
+
+Going to use regex to rename SAM files
+
+
+
+```
+sed -i 's/::/\_/g' filename.sam
+		#'search/for ::/replace with_ (/ to take literally)/g is an option to do it globally
+		
+```
+
+
+
 ------
 <div id='id-section6'/>
 ### Page 6:
