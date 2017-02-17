@@ -403,26 +403,100 @@ Missed class this day
 9. SNP validation - primers
    1. Use Sanger sequencing or mass spec to quality control a portion of your sequence data
 10. Applications
-    1. Differences in population structure
-    2. How natural selection is acting on particular loci
+   1. Differences in population structure
+   2. How natural selection is acting on particular loci
 11. Methods for Applications
-    1. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
-    2. Non outlier - Tests high Fst loci for other features associated with selection
-       1. Fitness advantage
-       2. Functional enrichment
+   1. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
+   2. Non outlier - Tests high Fst loci for other features associated with selection
+      1. Fitness advantage
+      2. Functional enrichment
 
 Command Line notes:
+
+Getting up to date on data processing
+
+opened sam file in my scripts directory
+
+```
+cd scripts 
+ll
+```
+
+Save the tail of the SAM file 
+
+```
+tail -n 100 filename > tail.sam
+vim tail.sam
+:set nowrap
+```
+
+Reading a SAM file
+
+Col1: the read/query/name
+
+Col2: Flag (corresponds to information regarding the mapping success)
+
+- 77 all bad
+- 141 second in pair and all bad
+- 113 this is the first read of a pair, both reads in pair were flipped and both mapped
+- 177 this is the second read of a pair, both reads in pair were flipped and both mapped
+- 65 this is first read in pair and both reads aligned the forward strand
+- 129 This is second read of pair and both reads aligned the forward strand.
+
+Col3: The reference sequence name to which the read mapped
+
+Col4: The left most position in the reference where the read mapped
+
+Col5: Phred score
+
+Col6: CIGAR string that gives alignment information
+
+- how many bases match (M) where there's an insertion (I) or deletion (D)
+
+Col7: an '=', mate position, inferred insert size (col7,8,9)
+
+Col8: The query sequence and Phred quality score from the FASTQ file (cols 10,11)
+
+Col9: information found in the tags at the end, if the read mapped, including whether it is a complete read (XT:A:U), the number of best hits (X0:i:1), the number of suboptimal hits (X1:i:0)
+
+
+
+Use the grep command to tell you how many reads mapped uniquely
+
+```
+grep -c XT:A:U 08_5-14_S_1_bwaaln.sam
+```
+
+5991502 uniquely mapped reads
+
+```
+grep -c X0:i:1 08_5-14_S_1_bwaaln.sam
+
+```
+
+6014626 best hits
+
+**LEFT OFF HERE**
+
+
 
 The below renaming of SAM file needs to be done in the directory of your SAM file (I think it is in my scripts file) 
 
 Going to use regex to rename SAM files
 
-
-
 ```
 sed -i 's/::/\_/g' filename.sam
 		#'search/for ::/replace with_ (/ to take literally)/g is an option to do it globally
 		
+```
+
+Find and copy python script into your scripts directory. Run python script.
+
+```
+cd /data/scripts
+ll
+cp countxpression_pe.py ~/scripts
+python countxpression_pe.py 20 35 countstatssummary.txt YOURFILENAME.sam
 ```
 
 
