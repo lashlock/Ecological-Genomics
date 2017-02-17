@@ -476,10 +476,6 @@ grep -c X0:i:1 08_5-14_S_1_bwaaln.sam
 
 6014626 best hits
 
-**LEFT OFF HERE**
-
-
-
 The below renaming of SAM file needs to be done in the directory of your SAM file (I think it is in my scripts file) 
 
 Going to use regex to rename SAM files
@@ -495,8 +491,8 @@ Find and copy python script into your scripts directory. Run python script.
 ```
 cd /data/scripts
 ll
-cp countxpression_pe.py ~/scripts
-python countxpression_pe.py 20 35 countstatssummary.txt YOURFILENAME.sam
+cp countxpression_PE.py ~/scripts
+python countxpression_PE.py 20 35 countstatssummary.txt YOURFILENAME.sam
 ```
 
 
