@@ -16,7 +16,7 @@ Notes from class material,and class project will populate this notebook.
 * [Page 3: 2017-02-08](#id-section3). 
 * [Page 4: 2017-02-13](#id-section4) . 
 * [Page 5: 2017-02-15](#id-section5). 
-* [Page 6:](#id-section6).
+* [Page 6: 2017-02-22](#id-section6). DESEQ 2 Tutorial
 * [Page 7:](#id-section7).
 * [Page 8:](#id-section8).
 * [Page 9:](#id-section9).
@@ -403,10 +403,10 @@ Missed class this day
 9. SNP validation - primers
    1. Use Sanger sequencing or mass spec to quality control a portion of your sequence data
 10. Applications
-   1. Differences in population structure
+11. Differences in population structure
    2. How natural selection is acting on particular loci
-11. Methods for Applications
-   1. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
+12. Methods for Applications
+13. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
    2. Non outlier - Tests high Fst loci for other features associated with selection
       1. Fitness advantage
       2. Functional enrichment
@@ -500,6 +500,9 @@ python countxpression_PE.py 20 35 countstatssummary.txt YOURFILENAME.sam
 ------
 <div id='id-section6'/>
 ### Page 6:
+
+Notes in r script file
+
 ------
 <div id='id-section7'/>
 ### Page 7:
