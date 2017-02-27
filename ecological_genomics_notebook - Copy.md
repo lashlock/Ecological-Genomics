@@ -17,7 +17,7 @@ Notes from class material,and class project will populate this notebook.
 * [Page 4: 2017-02-13](#id-section4) . 
 * [Page 5: 2017-02-15](#id-section5). 
 * [Page 6: 2017-02-22](#id-section6). DESEQ 2 Tutorial
-* [Page 7:](#id-section7).
+* [Page 7:2017-02-27](#id-section7). Scott Edwards and Differential Expression Analysis
 * [Page 8:](#id-section8).
 * [Page 9:](#id-section9).
 * [Page 10:](#id-section10).
@@ -383,31 +383,31 @@ Missed class this day
 - SNP data - expressed sequences
 
 1. Tissue
-   1. breadth of tissue from different developmental stages
-      1. This controls for exon skipping
+      1. breadth of tissue from different developmental stages
+         1. This controls for exon skipping
 2. Pool samples and create your sequence libraries (30-100Million p.e. long reads)
 3. Process raw sequence data
-   1. Important for SNP detection
+      1. Important for SNP detection
 4. Digital normalization
-   1. Remove high coverage reads and associated errors
-      1. Loss of quantitative info
+      1. Remove high coverage reads and associated errors
+         1. Loss of quantitative info
 5. Assemble clean p.e. reads
 6. Prune assembled transcripts
-   1. Reduce DNA contaminations, noncoding DNA, and gene fragments
+      1. Reduce DNA contaminations, noncoding DNA, and gene fragments
 7. Assembly evaluation using either a reference genome or conserved genes in other eukaryotic organisms
 8. SNP detection
-   1. Software: constant patterns of sequence variation
-      1. sequence errors - hopefully your software will eliminate reads of low frequency
-      2. Errors can also be found in homogeneous regions... amplified by PCR... can filter for these
-      3. Artifacts caused by InDels - filter SNP clusters near indels, quality scores
+      1. Software: constant patterns of sequence variation
+         1. sequence errors - hopefully your software will eliminate reads of low frequency
+         2. Errors can also be found in homogeneous regions... amplified by PCR... can filter for these
+         3. Artifacts caused by InDels - filter SNP clusters near indels, quality scores
 9. SNP validation - primers
-   1. Use Sanger sequencing or mass spec to quality control a portion of your sequence data
+      1. Use Sanger sequencing or mass spec to quality control a portion of your sequence data
 10. Applications
 11. Differences in population structure
-   2. How natural selection is acting on particular loci
-12. Methods for Applications
-13. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
-   2. Non outlier - Tests high Fst loci for other features associated with selection
+12. How natural selection is acting on particular loci
+13. Methods for Applications
+14. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
+15. Non outlier - Tests high Fst loci for other features associated with selection
       1. Fitness advantage
       2. Functional enrichment
 
@@ -506,6 +506,13 @@ Notes in r script file
 ------
 <div id='id-section7'/>
 ### Page 7:
+
+Differential Expression Analysis using DESEQ
+
+- Models run today will only run through a random 10% sample of our data
+- Notes in annotated script DESEQ2_SSW_round2.R
+- ​
+
 ------
 <div id='id-section8'/>
 ### Page 8:
