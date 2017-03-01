@@ -17,8 +17,8 @@ Notes from class material,and class project will populate this notebook.
 * [Page 4: 2017-02-13](#id-section4) . 
 * [Page 5: 2017-02-15](#id-section5). 
 * [Page 6: 2017-02-22](#id-section6). DESEQ 2 Tutorial
-* [Page 7:2017-02-27](#id-section7). Scott Edwards and Differential Expression Analysis
-* [Page 8:](#id-section8).
+* [Page 7: 2017-02-27](#id-section7). Scott Edwards and Differential Expression Analysis
+* [Page 8: 2017-03-01](#id-section8). Differential expression - Catch up Day
 * [Page 9:](#id-section9).
 * [Page 10:](#id-section10).
 * [Page 11:](#id-section11).
@@ -408,8 +408,8 @@ Missed class this day
 13. Methods for Applications
 14. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
 15. Non outlier - Tests high Fst loci for other features associated with selection
-      1. Fitness advantage
-      2. Functional enrichment
+        1. Fitness advantage
+        2. Functional enrichment
 
 Command Line notes:
 
@@ -516,6 +516,32 @@ Differential Expression Analysis using DESEQ
 ------
 <div id='id-section8'/>
 ### Page 8:
+
+**Differential Expression Analysis HW due next Wednesday**
+
+Info Update: WGCNA (weighted gene correlation network analysis)
+
+- An R package applies correlation network methods to describe correlation (co-expression) patterns among genes in  gene expression data
+  - Network construction 
+    - Each node is a gene
+    - Edges are showing how strongly correlated they are by expression
+      - Signed/unsigned networks excluding or including positive and negative correlates
+    - Input - rows are genes (read counts for these genes) and columns are individuals
+    - This matrix is used to evaluate correlations between each set of genes 
+    - This leads you to your next step of module identification (genes that are highly correlated to each other and are clustering together)
+    - This program uses a weighted analysis
+      - has a soft (continuous) threshold for determining whether or not genes are linked. Does this by value, not a dichotomous pass/fail that an unweighted analysis would have
+  - Module Identification
+    - Unsupervised clustering (not a biased set of genes, doesn't choose input)
+    - removes weak edges (correlations)
+    - Summarize profiles of modules - Eigengenes which collapses module network into a principal component
+  - Relationship of modules to external information
+    - Gene significance assigns a positive number with each gene
+  - Relationship between/within modules
+  - Finding key drivers in modules of interest
+
+
+
 ------
 <div id='id-section9'/>
 ### Page 9:

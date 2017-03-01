@@ -313,3 +313,6 @@ plotPCA(vsd, intgroup=c("health"))
 plotPCA(vsd, intgroup=c("day"))
 plotPCA(vsd, intgroup=c("location"))
 plotPCA(vsd, intgroup=c("health","location"))
+
+##heat plot on DESEQ script on server 
+## Looks like individuals are clustering together by similar expression... should include in our models
