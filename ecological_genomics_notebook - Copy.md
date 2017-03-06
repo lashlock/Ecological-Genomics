@@ -19,7 +19,7 @@ Notes from class material,and class project will populate this notebook.
 * [Page 6: 2017-02-22](#id-section6). DESEQ 2 Tutorial
 * [Page 7: 2017-02-27](#id-section7). Scott Edwards and Differential Expression Analysis
 * [Page 8: 2017-03-01](#id-section8). Differential expression - Catch up Day
-* [Page 9:](#id-section9).
+* [Page 9:2017-03-06](#id-section9). Population Genomics
 * [Page 10:](#id-section10).
 * [Page 11:](#id-section11).
 * [Page 12:](#id-section12).
@@ -382,34 +382,34 @@ Missed class this day
 
 - SNP data - expressed sequences
 
-1. Tissue
+1.    Tissue
       1. breadth of tissue from different developmental stages
          1. This controls for exon skipping
-2. Pool samples and create your sequence libraries (30-100Million p.e. long reads)
-3. Process raw sequence data
+2.    Pool samples and create your sequence libraries (30-100Million p.e. long reads)
+3.    Process raw sequence data
       1. Important for SNP detection
-4. Digital normalization
+4.    Digital normalization
       1. Remove high coverage reads and associated errors
          1. Loss of quantitative info
-5. Assemble clean p.e. reads
-6. Prune assembled transcripts
+5.    Assemble clean p.e. reads
+6.    Prune assembled transcripts
       1. Reduce DNA contaminations, noncoding DNA, and gene fragments
-7. Assembly evaluation using either a reference genome or conserved genes in other eukaryotic organisms
-8. SNP detection
+7.    Assembly evaluation using either a reference genome or conserved genes in other eukaryotic organisms
+8.    SNP detection
       1. Software: constant patterns of sequence variation
          1. sequence errors - hopefully your software will eliminate reads of low frequency
          2. Errors can also be found in homogeneous regions... amplified by PCR... can filter for these
          3. Artifacts caused by InDels - filter SNP clusters near indels, quality scores
-9. SNP validation - primers
+9.    SNP validation - primers
       1. Use Sanger sequencing or mass spec to quality control a portion of your sequence data
-10. Applications
-11. Differences in population structure
-12. How natural selection is acting on particular loci
-13. Methods for Applications
-14. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
-15. Non outlier - Tests high Fst loci for other features associated with selection
-        1. Fitness advantage
-        2. Functional enrichment
+10.    Applications
+11.    Differences in population structure
+12.    How natural selection is acting on particular loci
+13.    Methods for Applications
+14.    Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
+15.    Non outlier - Tests high Fst loci for other features associated with selection
+          1. Fitness advantage
+          2. Functional enrichment
 
 Command Line notes:
 
@@ -541,10 +541,223 @@ Info Update: WGCNA (weighted gene correlation network analysis)
   - Finding key drivers in modules of interest
 
 
-
 ------
 <div id='id-section9'/>
 ### Page 9:
+
+Population genomics: 
+
+- SNPs and lots of them 
+- Processes: population structure, diversity within populations, selection (positive, negative)
+
+Pipeline: 
+
+Raw reads -> Clean -> Assemble "draft transcriptome" -> Map reads -> Transcriptomics ->
+
+Counts # reads/transcript -> Differential gene expression ... now we are looking at population genomics instead
+
+Take the same mapped reads -> Call SNPs and genotypes -> Allele frequencies/SFS/nucleotide diversity
+
+Complications with calling SNPs:
+
+- Sequencing Error (Illumina 1:100)
+  - Filters: minor allele frequencies (how many individuals is it found in), eliminate low frequency reads
+    - Depth of coverage
+
+Complications with calling genotypes: Assigning probabilities to each genotype and paralogs 
+
+Diversity: 
+
+- pi: pairwise nucleotide diversity
+  - equivalent (at the sequence level) to the expected level of heterozygosity
+
+Working with our data:
+
+- Using VCF tools to filter SNPs by depth/quality/etc
+  - We are going to treat repeated samples of each individual as technical replicates and compare them with each other
+
+Looked at the summary of our vcf file
+
+```
+vcftools --vcf SSW_bamlist.txt.vcf
+```
+
+- After filtering, kept 24 out of 24 Individuals
+- After filtering, kept all 7.47M  
+
+Looking at how many sites were unresolved
+
+```
+ grep "unres" SSW_bamlist.txt.vcf | wc
+
+```
+
+5.63 million
+
+Looking at how many sites were paralogs
+
+```
+grep "para" SSW_bamlist.txt.vcf | wc
+
+```
+
+4,354
+
+Now, we are going to filter for biallelic sites
+
+- highly unlikely sites will have more than two alleles, likely due to sequencing error
+
+```
+vcftools --vcf SSW_bamlist.txt.vcf --min-alleles 2 --max-alleles 2
+
+```
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 20319 out of a possible 7472775 Sites
+
+
+
+Now, we will filter for a minor allele frequency of 0.02 (eliminating sites that only show up once in one individual...?)
+
+```
+vcftools --vcf SSW_bamlist.txt.vcf --maf 0.02
+```
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 5656584 out of a possible 7472775 Sites
+
+Now, filter for individuals that have less than 20% missing data
+
+```
+vcftools --vcf SSW_bamlist.txt.vcf --max-missing 0.8
+
+```
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 100219 out of a possible 7472775 Sites
+
+
+
+Now, output the resulting filtered data as a new vcf file in my data directory
+
+```
+vcftools --vcf SSW_bamlist.txt.vcf --min-alleles 2 --max-alleles 2 --maf 0.02 --max-missing 0.8 --recode --out ~/mydata/biallelic.MAF0.2.Miss0.8
+
+```
+
+Parameters as interpreted:
+
+        --vcf SSW_bamlist.txt.vcf
+        --maf 0.02
+        --max-alleles 2
+        --min-alleles 2
+        --max-missing 0.8
+        --out /users/l/a/lashlock/mydata/biallelic.MAF0.2.Miss0.8
+        --recode
+
+After filtering, kept 24 out of 24 Individuals
+Outputting VCF file...
+After filtering, kept 1180 out of a possible 7472775 Sites
+
+Then check it out by going to your mydata directory and vim the file
+
+```
+cd ~
+cd mydata
+ll
+vim biallelic.MAF0.2.Miss0.8.recode.vcf
+:set nowrap
+
+```
+
+
+
+Alright, so now conduct Hardy Weinberg on your filtered file, to see if your loci are in HWE
+
+```
+--vcf biallelic.MAF0.2.Miss0.8.recode.vcf --hardy
+
+```
+
+After filtering, kept 24 out of 24 Individuals
+Outputting HWE statistics (but only for biallelic loci)
+
+        HWE: Only using fully diploid SNPs.
+After filtering, kept 1180 out of a possible 1180 Sites
+
+All in HWE
+
+Head the hwe output file
+
+```
+ head out.hwe
+```
+
+Switch to R mode (to exit R mode type 'q()')
+
+```
+R
+```
+
+Read in our output table and look at the structure of the file
+
+```
+> hardy <- read.table("out.hwe", header=T)
+> str(hardy)
+```
+
+'data.frame':   442 obs. of  8 variables:
+ $ CHR               : Factor w/ 111 levels "TRINITY_DN35598_c0_g1_TRINITY_DN35598_c0_g1_i1_g.5802_m.5802",..: 65 65 100 100 100 100 100 100 88 88 ...
+ $ POS               : int  4566 4665 978 1404 1722 3426 3729 3912 115 141 ...
+ $ OBS.HOM1.HET.HOM2.: Factor w/ 27 levels "10/11/3","11/0/13",..: 27 22 27 27 20 27 22 18 18 27 ...
+ $ E.HOM1.HET.HOM2.  : Factor w/ 16 levels "10.01/10.98/3.01",..: 14 12 14 14 11 14 12 10 10 14 ...
+ $ ChiSq_HWE         : num  0.0109 0.1067 0.0109 0.0109 0.1983 ...
+ $ P_HWE             : num  1 1 1 1 1 1 1 1 1 1 ...
+ $ P_HET_DEFICIT     : num  1 1 1 1 1 1 1 1 1 1 ...
+ $ P_HET_EXCESS      : num  1 0.936 1 1 0.874 ...
+
+Now let's look at the rows in this file that are not in HWE
+
+```
+ hardy[which(hardy$P_HET_EXCESS<0.001),]
+```
+
+[1] CHR                POS                OBS.HOM1.HET.HOM2. E.HOM1.HET.HOM2.
+[5] ChiSq_HWE          P_HWE              P_HET_DEFICIT      P_HET_EXCESS
+<0 rows> (or 0-length row.names)
+
+```
+hardy[which(hardy$P_HET_DEFICIT<0.001),]
+```
+
+                                                                 CHR POS
+291 TRINITY_DN45155_c27_g1_TRINITY_DN45155_c27_g1_i1_g.18742_m.18742  99
+293 TRINITY_DN45155_c27_g1_TRINITY_DN45155_c27_g1_i1_g.18742_m.18742 138
+401     TRINITY_DN39079_c3_g1_TRINITY_DN39079_c3_g1_i1_g.8354_m.8354 244
+406     TRINITY_DN39696_c4_g1_TRINITY_DN39696_c4_g1_i1_g.8926_m.8926 283
+    OBS.HOM1.HET.HOM2. E.HOM1.HET.HOM2. ChiSq_HWE        P_HWE P_HET_DEFICIT
+291            11/0/13  5.04/11.92/7.04        24 9.114786e-08  9.114786e-08
+293             19/0/5  15.04/7.92/1.04        24 6.498371e-06  6.498371e-06
+401            13/0/11  7.04/11.92/5.04        24 9.114786e-08  9.114786e-08
+406            13/0/11  7.04/11.92/5.04        24 9.114786e-08  9.114786e-08
+    P_HET_EXCESS
+291            1
+293            1
+401            1
+406            1
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------
 <div id='id-section10'/>
 ### Page 10:

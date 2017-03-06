@@ -6,14 +6,15 @@ library("ggplot2")
 countsTable <- read.delim('countsdata_trim2.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
 countData <- as.matrix(countsTable)
 head(countData)
+tail(countData)
 
 conds <- read.delim("cols_data_trim.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
 head(conds)
 colData <- as.data.frame(conds)
 head(colData)
+colData
 
 
-#################### MODEL NUMBER 1: TEST EFFECT OF HEALTH CONTROLLING FOR LOCATION
 
 dds <- DESeqDataSetFromMatrix(countData = countData, colData = colData, design = ~ location + health)
 # In this typical model, the "health effect" represents the overall effect of health status 
