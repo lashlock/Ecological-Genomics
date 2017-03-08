@@ -20,7 +20,7 @@ Notes from class material,and class project will populate this notebook.
 * [Page 7: 2017-02-27](#id-section7). Scott Edwards and Differential Expression Analysis
 * [Page 8: 2017-03-01](#id-section8). Differential expression - Catch up Day
 * [Page 9:2017-03-06](#id-section9). Population Genomics
-* [Page 10:](#id-section10).
+* [Page 10:2017-03-08](#id-section10).Effective population size
 * [Page 11:](#id-section11).
 * [Page 12:](#id-section12).
 * [Page 13:](#id-section13).
@@ -408,8 +408,8 @@ Missed class this day
 13.    Methods for Applications
 14.    Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
 15.    Non outlier - Tests high Fst loci for other features associated with selection
-          1. Fitness advantage
-          2. Functional enrichment
+            1. Fitness advantage
+            2. Functional enrichment
 
 Command Line notes:
 
@@ -761,6 +761,295 @@ hardy[which(hardy$P_HET_DEFICIT<0.001),]
 ------
 <div id='id-section10'/>
 ### Page 10:
+
+Rate of evolution due to the relationship of effective population size and the substitution rate
+
+
+
+4 methods of measuring effective population size
+
+- From species life history
+- From variance in allele frequency between populations
+- From genetic polymorphism data
+- Correlated to body saize
+
+Effective population size varies across species
+
+Signatures in the genome:
+
+- genetic hitchhiking = selective sweep
+- Background selection (opposite of hitchhiking elimination of adaptive or neutral alleles due to linkage with deleterious alleles)
+- Smaller number of sex chromosomes and larger amount of autosomes
+
+Mutations
+
+- across gene or chromosome
+  - Duplication, inversion, deletion, insertion, translocation
+- base level (point mutation)
+  - Substitutions
+    - Transitions : purine for purine and pyrimidine for pyrimidine
+    - Transversion: purine for pyrimidine or vice versa
+  - Synonymous (silent) mutations
+    - Natural selection does not act on these mutations, the only reason they increase in frequency in a population is due to drift
+  - Nonsynonymous mutations (missense/replacement)
+    - Natural selection acts on these: purifying selection (removal of deleterious alleles) or positive selection (increase in frequency of adaptive alleles)
+
+Classes of Mutations
+
+- Neutral
+  - no natural selection, drift acts on these, more drift in larger genomes w=0, <1/Ne
+- slightly deleterious
+  - Small effect of w
+  - Natural selection and drift act here
+  - haploid = 1/Ne, diploid = 2Ne
+- slightly advantageous
+- Deleterious
+  - big effect of selection >1/Ne
+  - negative (NeRR)
+- Advantageous
+  - big effect of selection >1/Ne
+  - positive (NeRR)
+
+Variation in mutation rate 
+
+- generation time
+  - shorter generation time = higher mutation rate
+- Selection 
+  - lowers mutation rate (controversial)
+
+NeRR and Linkage
+
+- selective sweep
+- clonal interference (competition for fixation between adaptive alleles)
+
+Fitness landscapes
+
+- Populations further away from an adaptive peak will (theoretically) have a higher rate of mutation, because they are working towards reaching the adaptive peak
+- Populations close to an adaptive peak will (theoretically) have a lower mutation rate because mutations will drift them away from that peak
+
+**Popgen Pt 2**
+
+Path to data:
+
+```
+cd /data/project_data/snps/reads2snps/
+ll
+```
+
+Looking into our zipped vcf file
+
+```
+vcftools --gzvcf SSW_byind.txt.vcf.gz
+
+```
+
+
+
+After filtering, kept 22 out of 22 Individuals
+After filtering, kept 7485987 out of a possible 7485987 Sites
+
+
+
+Filtering Data
+
+Filtering for biallelic loci
+
+```
+vcftools --gzvcf SSW_byind.txt.vcf.gz --min-alleles 2 --max-alleles 2 --maf 0.02 --max-missing 0.8 --recode --out ~/SSW_all_biallelic.MAF0.02.Miss0.8 
+```
+
+After filtering, kept 22 out of 22 Individuals
+Outputting VCF file...
+After filtering, kept 5565 out of a possible 7485987 Sites
+
+This output went to my home directory
+
+cd to home directory
+
+```
+cd ~/
+ll
+```
+
+Zip the output file
+
+```
+gzip SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf
+```
+
+This next term calls vcf tools and reads in new files, and looking for files that match HWE 
+
+```
+vcftools --gzvcf SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz --hardy
+```
+
+After filtering, kept 22 out of 22 Individuals
+Outputting HWE statistics (but only for biallelic loci)
+
+        HWE: Only using fully diploid SNPs.
+After filtering, kept 5565 out of a possible 5565 Sites
+
+
+
+Now open R on the terminal
+
+```
+R
+```
+
+Read file into R
+
+```
+hwe <- read.table("out.hwe", header=T)
+```
+
+Check out the structure and content of the file
+
+```
+str(hwe)
+summary(hwe)
+```
+
+Now, let's search for snps that deviate from HWE 
+
+```
+which(hwe$P_HET_DEFICIT<0.01)
+```
+
+[1] 1001 1021 1023 1300 1302 1320 1407 1409
+
+Now, look at all columns
+
+```
+hwe[which(hwe$P_HET_DEFICIT<0.01),]
+
+```
+
+                                                                  CHR POS
+1001 TRINITY_DN45155_c27_g2_TRINITY_DN45155_c27_g2_i2_g.18743_m.18743 216
+1021 TRINITY_DN45155_c27_g1_TRINITY_DN45155_c27_g1_i1_g.18742_m.18742  99
+1023 TRINITY_DN45155_c27_g1_TRINITY_DN45155_c27_g1_i1_g.18742_m.18742 138
+1300     TRINITY_DN39079_c3_g1_TRINITY_DN39079_c3_g1_i1_g.8354_m.8354 244
+1302     TRINITY_DN39079_c3_g1_TRINITY_DN39079_c3_g1_i1_g.8354_m.8354 279
+1320     TRINITY_DN39696_c4_g1_TRINITY_DN39696_c4_g1_i1_g.8926_m.8926 283
+1407   TRINITY_DN42225_c1_g1_TRINITY_DN42225_c1_g1_i1_g.12458_m.12458 220
+1409   TRINITY_DN42225_c1_g1_TRINITY_DN42225_c1_g1_i1_g.12458_m.12458 255
+     OBS.HOM1.HET.HOM2. E.HOM1.HET.HOM2. ChiSq_HWE        P_HWE P_HET_DEFICIT
+1001             20/0/2  18.18/3.64/0.18        22 1.701645e-03  1.701645e-03
+1021            10/0/12  4.55/10.91/6.55        22 3.671957e-07  3.671957e-07
+1023             17/0/5  13.14/7.73/1.14        22 1.061317e-05  1.061317e-05
+1300            12/0/10  6.55/10.91/4.55        22 3.671957e-07  3.671957e-07
+1302             20/0/2  18.18/3.64/0.18        22 1.701645e-03  1.701645e-03
+1320            12/0/10  6.55/10.91/4.55        22 3.671957e-07  3.671957e-07
+1407            10/0/12  4.55/10.91/6.55        22 3.671957e-07  3.671957e-07
+1409             20/0/2  18.18/3.64/0.18        22 1.701645e-03  1.701645e-03
+     P_HET_EXCESS
+1001            1
+1021            1
+1023            1
+1300            1
+1302            1
+1320            1
+1407            1
+1409            1
+
+Running a comparison between samples in vcf tools
+
+You need to provide the way these samples are differentiated
+
+Navigate back to where you got the vcf file
+
+```
+cd /data/project_data/snps/reads2snps/
+ll
+```
+
+enter into vim for text file
+
+```
+vim ssw_healthloc.txt
+```
+
+Or you can copy to screen using cat
+
+```
+cat ssw_healthloc.txt
+```
+
+Grab the healthy individuals and output a txt file to home directory
+
+```
+grep "HH" ssw_healthloc.txt > ~/HOneSampPerInd.txt
+```
+
+Grab the sick individuals
+
+```
+grep "SS" ssw_healthloc.txt > ~/SOneSampPerInd.txt
+```
+
+Append (using >>) HS individuals to SS text file 
+
+```
+grep "HS" ssw_healthloc.txt >> ~/SOneSampPerInd.txt
+```
+
+cd to home dir
+
+```
+cd ~/
+ll
+```
+
+The files are there
+
+VCF tools wants only the sample ID so we will select the column we want
+
+```
+cut -f 1 HOneSampPerInd.txt >HOneSampPerInd2.txt
+```
+
+cat to see if it worked
+
+```
+ cat HOneSampPerInd2.txt
+```
+
+Now do it again for the sick file
+
+```
+cut -f 1 SOneSampPerInd.txt >SOneSampPerInd2.txt
+```
+
+Now use these files to run the vcf allele frequency command
+
+```
+ 
+vcftools --gzvcf SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz --freq2 --keep HOneSampPerInd2.txt --out H_AlleleFreqs
+```
+
+After filtering, kept 6 out of 22 Individuals
+
+```
+vcftools --gzvcf SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz --freq2 --keep SOneSampPerInd2.txt --out S_AlleleFreqs
+```
+
+After filtering, kept 14 out of 22 Individuals
+
+Now hop into your output files and edit the headers
+
+- take out freq
+- replace with MAJOR [TAB] MINOR
+- Do for both files
+
+
+
+
+
+
+
+
+
 ------
 <div id='id-section11'/>
 ### Page 11:
