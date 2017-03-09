@@ -193,3 +193,5 @@ pLoc
 pLoc <- ggplot(dLoc, aes(x=score, y=count, color=health, group=health)) 
 pLoc <- pLoc +  geom_point() + stat_smooth(se=FALSE,method="loess") +  scale_y_log10()
 pLoc
+
+citation("DESeq2")
