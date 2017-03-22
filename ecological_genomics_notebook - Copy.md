@@ -22,8 +22,8 @@ Notes from class material,and class project will populate this notebook.
 * [Page 9:2017-03-06](#id-section9). Population Genomics
 * [Page 10:2017-03-08](#id-section10).Effective population size
 * [Page 11:2017-03-08](#id-section11). R script for homework 2
-* [Page 12:](#id-section12).
-* [Page 13:](#id-section13).
+* [Page 12:2017-03-20](#id-section12). Population genetic structure
+* [Page 132017-22-17:](#id-section13). Species Divergence
 * [Page 14:](#id-section14).
 * [Page 15:](#id-section15).
 * [Page 16:](#id-section16).
@@ -385,31 +385,31 @@ Missed class this day
 1.    Tissue
       1. breadth of tissue from different developmental stages
          1. This controls for exon skipping
-2.    Pool samples and create your sequence libraries (30-100Million p.e. long reads)
-3.    Process raw sequence data
+2. Pool samples and create your sequence libraries (30-100Million p.e. long reads)
+3. Process raw sequence data
       1. Important for SNP detection
-4.    Digital normalization
+4. Digital normalization
       1. Remove high coverage reads and associated errors
          1. Loss of quantitative info
-5.    Assemble clean p.e. reads
-6.    Prune assembled transcripts
+5. Assemble clean p.e. reads
+6. Prune assembled transcripts
       1. Reduce DNA contaminations, noncoding DNA, and gene fragments
-7.    Assembly evaluation using either a reference genome or conserved genes in other eukaryotic organisms
-8.    SNP detection
+7. Assembly evaluation using either a reference genome or conserved genes in other eukaryotic organisms
+8. SNP detection
       1. Software: constant patterns of sequence variation
          1. sequence errors - hopefully your software will eliminate reads of low frequency
          2. Errors can also be found in homogeneous regions... amplified by PCR... can filter for these
          3. Artifacts caused by InDels - filter SNP clusters near indels, quality scores
-9.    SNP validation - primers
+9. SNP validation - primers
       1. Use Sanger sequencing or mass spec to quality control a portion of your sequence data
-10.    Applications
-11.    Differences in population structure
-12.    How natural selection is acting on particular loci
-13.    Methods for Applications
-14.    Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
-15.    Non outlier - Tests high Fst loci for other features associated with selection
-              1. Fitness advantage
-              2. Functional enrichment
+10. Applications
+11. Differences in population structure
+12. How natural selection is acting on particular loci
+13. Methods for Applications
+14. Outlier - for a given locus, whats the level of differentiation compared to differences across the genome? Using Fst
+15. Non outlier - Tests high Fst loci for other features associated with selection
+            1. Fitness advantage
+            2. Functional enrichment
 
 Command Line notes:
 
@@ -1260,9 +1260,238 @@ citation("DESeq2")
 ------
 <div id='id-section12'/>
 ### Page 12:
+
+Means of identifying global ancestry: 
+
+- Model based: structure (Bayesian), AdMIXTURE (Maximum Likelihood)
+  - admixture is faster, alternates between ancestral and gene frequency matrices
+- Nonparametric:
+  - multivariate analysis
+  - clustering
+    - pairwise data matrix (distances or similarities)
+    - Program
+    - Produce phenograms - type of tree based on overall similarity
+  - Ordination methods
+    - PCA
+    - MDS
+
+Means of identifying local ancestry: each chromosome is a mosaic of segments from different ancestral populations. The goal is to identify the population of origin for each position in the genome.
+
+- HMM
+  - Structure (but structure doesn't model LD)
+  - LAMP (sliding window, and assigning ancestral populations by PCA)
+  - RFMix (discriminate function analysis)
+
+Weaknesses:
+
+- Very reliable for looking at n=2 source populations, beyond that you lose accuracy quickly
+
+
+- Makes the assumption that we know K (number of ancestral populations) and their allele frequencies
+  - we rarely know that
+  - Can use simulations to get at this 
+  - Greatest impact when ancestor is recent
+
+Applications
+
+- Pharmacogenomics
+- Map diseases to genes
+  - disease linked genes and variation in disease linked genes
+
+Future research and Challenges
+
+- more SNPs, greater sample sizes
+  - improvements on current methods
+- personalized medicine
+- powerful tools for admixture mapping
+
+
+
+Coding Time!
+
+Popgen script three
+
+New vcf file with all 24 individuals
+
+Want to divvy up the vcf by healthy and sick into two different text files so we can compare
+
+```
+grep "HH" ssw_healthloc.txt | cut -f1 >~/H_SampleIDs.txt
+grep "HS\|SS" ssw_healthloc.txt | cut -f1 >~/S_SampleIDs.txt
+```
+
+Now go back to your home directory and check out the text files
+
+```
+cd ~/
+[lashlock@pbio381 ~]$ cat S_SampleIDs.txt
+```
+
+
+
+Looks good
+
+Now let's calculate allele frequencies for both files
+
+```
+ vcftools --gzvcf SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz --freq2 --keep H_SampleIDs.txt --out H_AlleleFreqs
+ vcftools --gzvcf SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz --freq2 --keep S_SampleIDs.txt --out S_AlleleFreqs
+
+```
+
+Kept all sites
+
+
+
+Now, let's calculate Fst between the healthy and sick individuals
+
+```
+vcftools --gzvcf SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz --weir-fst-pop H_SampleIDs.txt --weir-fst-pop S_SampleIDs.txt --out HvS_Fst
+```
+
+Now use winSCP to move the allele frequency files and the Fst file to your computer
+
+Edit the headers on the text files, so R doesn't have trouble reading them into R
+
+R script
+
+```
+##Looking at allele frequencies 
+##Ecological Genomics
+##Lauren Ashlock
+##3 20 17
+
+#### read in your text files (remember to edit header first)
+
+H_freq <- read.table("H_AlleleFreqs.frq", header=T)
+S_freq <- read.table("S_AlleleFreqs.frq", header=T)
+
+str(H_freq)
+str(S_freq)
+
+# Since these files have identical numbers of SNPs in the exact same order, 
+# we can concatenate them together into one large dataframe:
+
+All_freq <- merge(H_freq, S_freq, by=c("CHROM", "POS"))
+
+# Looks good, now let's calculate the difference in minor allele frequency
+# at each SNP and plot as a histogram
+
+All_freq$diff <- (All_freq$H_ALT - All_freq$S_ALT)
+
+hist(All_freq$diff, breaks=50, col="red", main="Allele frequency difference (H-S)")
+
+
+# Looks like most loci show little difference (i.e., likely drift), 
+# but perhaps a few show very large differences between healthy and sick 
+# (drift or selection?)
+
+# How do these highly divergent frequenices compare to Fst at the same SNPs?
+fst <- read.table("HvS_Fst.weir.fst", header=T)
+
+All_freq.fst <- merge(All_freq, fst, by=c("CHROM", "POS"))
+
+plot(All_freq.fst$diff, All_freq.fst$WEIR_AND_COCKERHAM_FST, xlab="Allele frequency difference (H-S)", ylab="Fst", main="Healthy vs. Sick SNP divergence")
+
+#As I guess we would expect.... with greater allele frequency difference
+#there appears to be a greater Fst
+#Each point on this plot is a SNP
+
+# Which are the genes that are showing the highest divergence between Healthy and Sick?
+All_freq.fst[which(All_freq.fst$WEIR_AND_COCKERHAM_FST>0.2),]
+
+points(0.2500000,0.2415350,col="red", fill="red", cex=2)
+
+#This modifies a point on the plot you currently have open
+```
+
+
+
+
+
+
+
 ------
 <div id='id-section13'/>
 ### Page 13:
+
+Info Update: Species divergence with gene flow
+
+
+
+- Allopatric speciation - speciation due to physical isolation and subsequent loss of gene flow
+- Sympatric speciation - divergence in the presence of gene flow due to diversifying selection
+  - selected genes will be divergent
+  - neutral alleles appear homogenous
+
+Inferring history of divergence
+
+- Genomic scans
+  - Islands of differentiation
+    - looking at the distribution of summary statistics that measure differentiation (Fst)
+    - genomic region with high Fst is an indicator that it is a region under selection
+- Gene vs population trees
+  - compare assumed population trees to gene trees
+  - compare gene trees
+  - D statistic to determine introgression using ABBA-BABA
+  - No introgression: D=0 (ABBA=BABA)
+  - Introgression: != 0
+
+Limitations
+
+- Throw out data
+- Requires many genomes
+- Same Fst values can be interpreted in multiple ways
+
+
+
+Likelihood/model-based methods
+
+- Allele frequency spectrum
+  - uses count data to generate a distribution of allele frequencies
+  - neutral/bottleneck negative exponential
+  - selective sweep u shape
+  - Assumptions
+    - SNPs are independent
+    - Free recombination among SNPs
+    - Mutation rates are equal
+  - Limitations
+    - computationally challenging
+    - lose genomic data by only looking at SNPs
+    - Expensive for models with more than three populations
+- Genealogy sampling
+  - multiple regions, one gene tree
+  - From this you can estimate effective population size, mutation rate, and admixture
+  - Assumptions
+    - Free recombination among genes
+    - Complete linkage with loci
+    - Mutation rates vary across the genome
+    - No recombination since common ancestor
+- Likelihood free method
+  - Approximate Bayesian Computation
+    - simulations under model of interest
+
+Historical Gene Flow and LD Patterns
+
+- Distribution of haplotype lengths
+  - If you identify a migrant population, you can measure the time since first migration by looking at the fragments of linked blocks of the genome and their change in length over time
+- Approximation of conditional likelihoods
+  - Ancestral recombination graphs (ARGs)
+    - looks like a gene tree, but instead the tree is based on recombination events
+  - Limitations
+    - complex
+    - difficult to ID correct ARG
+
+NGS advantages and disadvantages
+
+- good estimation of recombination rates
+- large area for genome scans
+- Ascertainment bias
+- Throw out data
+- Computationally challenging
+
+
+
 ------
 <div id='id-section14'/>
 ### Page 14:
