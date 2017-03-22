@@ -1490,6 +1490,94 @@ NGS advantages and disadvantages
 - Throw out data
 - Computationally challenging
 
+Tutorial
+
+- We'll use the **piNpiS** script from Gayral et al. (2013) to run this. We only need a single input file, which is a FASTA formatted sequence file that is output from **reads2snps**, and we'll save the output to our home directories:
+
+```
+cd /data/project_data/snps/reads2snps
+/data/popgen/dNdSpiNpiS_1.0 -alignment_file=SSW_by24inds.txt.fas -ingroup=sp -out=~/dNdSpiNpiS_output
+```
+
+
+
+- This command takes a long time to run so before you run , set scree, then run the code, then detach from the screen
+
+```
+screen
+/data/popgen/dNdSpiNpiS_1.0 -alignment_file=SSW_by24inds.txt.fas -ingroup=sp -out=~/dNdSpiNpiS_output
+crtl ad
+```
+
+- If you want to reattach...
+
+```
+screen -r
+crtl ad
+```
+
+- While we let this run, let's take a look at an estimate already made from a subsample of our data (only one script per individual)
+
+```
+cat SSW_bamlist.txt.sum
+```
+
+- From this you get a biological summary for all of your samples
+  - take a look at Fit, and piS/piN
+  - Fit: Average Fit: -0.0507419 [-0.06817; -0.031933] (positive is high homozygosity)
+  - Average piS in focal species: 0.00585312 [0.005172; 0.006598]
+    Average piN in focal species: 0.00154546 [0.00133; 0.001782]
+    Average piN / average piS: 0.264041 [0.223914; 0.310575]
+    - lower diversity in nonsynonymous sites is an indicator of purifying selection removing deleterious alleles caused by new mutations
+    - piN/piS is really an estimate of how strongly selection is acting to remove deleterious alleles
+    - To compare our values to other metazoans.... download info from Romiguier paper
+
+```
+
+/data/project_data/snps/reads2snps/Romiguier_nature13685-s3.csv
+```
+
+- load onto laptop using winscp
+- then load it into R
+- Ne=365,625 ...
+
+R script
+
+```
+# Read in the Romiguier data:
+Rom <- read.csv("Romiguier_nature13685-s3.csv", header=T)
+
+# Import OK?
+str(Rom) 
+head(Rom)
+
+# Looks good!
+# Now let's look at how the strength of purifying selection (piN/piS) 
+# compares to the size of Ne (piS). We'll plot these on a log scale to 
+# linearize the relationship.
+plot(log(Rom$piS), log(Rom$piNpiS), pch=21, bg="blue", xlab="log Synonymous Nucleotide Diversity (piS)", ylab="log Ratio of Nonysn to Syn Diversity (piN/piS)", main="Purifying Selection vs. Effective Population Size")
+
+# Now let's add our SSW points to the existing plot and give them a different symbol
+points(log(0.00585312), log(0.264041), pch=24, cex=1.5, bg="red") 
+
+# We can also add a regression line to the plot to see how far off the SSW estimates are from expectation
+reg <- lm(log(Rom$piNpiS) ~ log(Rom$piS)) # Fits a linear regression
+abline(reg) # adds the regression line to the plot
+
+# It would be useful to highlight the other echinoderms in the dataset...do our seastars behave similarly?
+echino <- Rom[which(Rom$Phylum=="Echinodermata"),] # subsets the data
+points(log(echino$piS), log(echino$piNpiS), pch=21, bg="red") # adds the points
+
+# Lastly, let's add a legend:
+legend("bottomleft", cex=1, legend=c("Metazoans", "Echinoderms", "P. ochraceus"), pch=c(21,21,24), col=c("blue", "red", "red"))
+
+# Pisaster seems to be in a group with other echinoderms that have relaxed 
+#purifying selection (high piN/piS), given their Ne...Interesting!
+#Can we hypothesize why this might be?
+```
+
+
+
 
 
 ------
