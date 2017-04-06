@@ -1,3 +1,5 @@
+
+
 # 2017 Ecological Genomics Course
 
 ### Author: Lauren Ashlock     
@@ -23,11 +25,11 @@ Notes from class material,and class project will populate this notebook.
 * [Page 10:2017-03-08](#id-section10).Effective population size
 * [Page 11:2017-03-08](#id-section11). R script for homework 2
 * [Page 12:2017-03-20](#id-section12). Population genetic structure
-* [Page 132017-22-17:](#id-section13). Species Divergence
-* [Page 14:](#id-section14).
-* [Page 15:](#id-section15).
-* [Page 16:](#id-section16).
-* [Page 17:](#id-section17).
+* [Page 13:2017-27-03](#id-section13). Species Divergence
+* [Page 14 :2017-29-03](#id-section14). Identifying local adaptation
+* [Page 15:2017-3-04](#id-section15).Fst
+* [Page 16:2017-04-04](#id-section16).HW #3 Notes
+* [Page 17:2017-05-04](#id-section17).Assignment 3 R code
 * [Page 18:](#id-section18).
 * [Page 19:](#id-section19).
 * [Page 20:](#id-section20).
@@ -1583,9 +1585,277 @@ legend("bottomleft", cex=1, legend=c("Metazoans", "Echinoderms", "P. ochraceus")
 ------
 <div id='id-section14'/>
 ### Page 14:
+
+Pr(G|K,Q,P)
+
+- Pr probability of given genotype (G) such that
+- K is the number of populations
+- Q is the proportion of the genotype that relates to each populations
+- P is the allele frequency
+
+Cross validation
+
+- build a model based on a subset of individuals and cross check your model for the individuals you left out
+- Can use these data to perform a cross validation analysis and select the model that has the least amount of error
+
+
+
+There is a particular format to run ADMIXTURE
+
+- PGDSpider will convert your files
+- Steve already did this...
+
+```
+/data/project_data/snps/reads2snps/SSW_tidal.pops
+
+/data/project_data/snps/reads2snps/vcf2admixture_SSW.spid
+
+/data/project_data/snps/reads2snps/vcf2geno.sh
+```
+
+Copy all of these files to your home directory using cp 
+
+```
+ cp SSW_tidal.pops ~/
+[lashlock@pbio381 reads2snps]$ cp vcf2admixture_SSW.spid ~/
+[lashlock@pbio381 reads2snps]$ cp vcf2geno.sh ~/
+[lashlock@pbio381 reads2snps]$ cd ~/
+
+```
+
+Use vim to open the vcf2geno.sh
+
+```
+vim vcf2geno.sh
+```
+
+
+
+Edit the bash script with your file names
+
+```
+java -Xmx512M -jar /data/popgen/PGDSpider_2.0.9.0/PGDSpider2-cli.jar -inputfile ./SSW_all_biallelic.MAF0.02Miss0.8.recode.vcf -inputformat VCF -outputfile ./SSW_all_biallelic.MAF0.02Miss0.8.recode.vcf.geno -outputformat EIGENSOFT -spid ./vcf2admixture_SSW.spid
+```
+
+Then run your updated bash script
+
+```
+./vcf2geno.sh
+```
+
+Copy ADMIX bash script to your home directory and vim to open it and look at the script
+
+```
+cp /data/project_data/snps/reads2snps/ADMIX.sh ~/
+vim ADMIX.sh
+
+#!/bin/bash
+
+# Run ADMIXTURE to determine the number of genetic clusters in the SNP data,
+# and the ancestry proportions of each individual
+
+# Here's the utility of 'for loops'...
+
+for K in {1..10}
+
+do
+
+admixture -C 0.000001 --cv ./SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.geno $K \
+| tee log${K}.out
+
+done
+
+# After the for loop finishes, you can use 'grep' to grab the values of the CV from each separate log file and append them into a new summary text file.
+
+"ADMIX.sh" 22L, 501C        
+
+```
+
+
+
+
+
+
+
+
+
 ------
 <div id='id-section15'/>
 ### Page 15:
+
+Concepts:
+
+- Inbreeding produces structured populations
+- Selective sweeps change allele frequencies in populations
+- Empirical p-values created from distribution of putatively neutral loci are super useful
+- Methods - OutFlank
+
+What challenges do outlier detection methods face?
+
+Hoe is LD our friend and foe?
+
+
+
+F statistics
+
+- Inbreeding coefficient (probability that any two alleles in a population are identical by descent)
+
+- look at heterozygosity
+
+  - at the level of the individual
+  - level of subpopulations
+  - level of all populations
+
+- Fst = Htotal population-Hsubpopulation/Htotal population
+
+- Fis = expected heterozygosity - observed heterozygosity/expected heterozygosity
+
+- Fit = Ht-Hi/Ht
+
+  COMPUTING NOTES
+
+  R script 
+
+  ```\
+  #OutFLANK
+  #ecological genomics
+  #4 3 17
+
+  #Install packages
+  install.packages("devtools")
+  library(devtools)
+  source("http://bioconductor.org/biocLite.R")
+  biocLite("qvalue")
+  install_github("whitlock/OutFLANK")
+  install.packages("tcltk")
+  install.packages("stringi")
+  library("stringi")
+  a
+
+  #load these packages
+  library(OutFLANK)
+  library(vcfR)
+  library(adegenet)
+  library(tcltk)
+  library(tibble)
+  library(qvalue)
+  ```
+
+
+  #Read in your geno file
+
+  ssw.geno_in <- read.fwf("SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.geno", 
+                          width=rep(1,24))
+  ssw.geno <- t(ssw.geno_in)
+
+
+  #read in the metadata
+
+  ssw_meta <- read.table("ssw_healthloc.txt", header=TRUE)
+  ssw_meta <- ssw_meta[order(ssw_meta$Individual),]
+  ssw_meta$Trajectory[which(ssw_meta$Trajectory=='MM')] = NA
+
+  OF_SNPs <- MakeDiploidFSTMat(ssw.geno,locusNames=seq(1,5317,1) , 
+                               popNames=ssw_meta$Trajectory)
+
+  dim(OF_SNPs)
+
+  head(OF_SNPs)
+
+  OF_out <- OutFLANK(FstDataFrame = OF_SNPs, LeftTrimFraction = 0.05, 
+                     RightTrimFraction = 0.05, Hmin = 0.1, NumberOfSamples = 3, 
+                     qthreshold = 0.1)
+
+  OutFLANKResultsPlotter(OF_out, withOutliers = T, NoCorr = T, Hmin = 0.1, 
+                         binwidth = 0.005, titletext = "Scan for local selection")
+  #find your outliers
+
+  outliers <- which(OF_out$results$OutlierFlag=="TRUE")
+  outliers
+
+  #we can extract info about the outliers by reading in the vcf file and looking at the annotations
+  vcf1 <- read.vcfR("SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf")
+  vcfann <- as.data.frame(getFIX(vcf1))
+  vcfann[outliers,]
+  ```
+
+  Command line 
+
+  ```
+  [lashlock@pbio381 ~]$ cd /data/project_data/snps/reads2snps/
+  [lashlock@pbio381 reads2snps]$ ll
+  total 436360
+  -rwxr-xr-x. 1 srkeller users       501 Mar 26 23:59 ADMIX.sh
+  drwxr-xr-x. 3 srkeller users      4096 Mar  8 00:28 bam_file_archive
+  drwxr-xr-x. 2 srkeller users      4096 Mar 19 07:45 old_snps_calls
+  -rw-r--r--. 1 srkeller users       283 Mar 31 13:32 out.log
+  -rw-r--r--. 1 srkeller users     14342 Mar  7 22:16 Romiguier_nature13685-s3.csv
+  -rw-r--r--. 1 srkeller users    132925 Mar 22 00:36 SSW_all_biallelic.MAF0.02.Mi                                                                                  ss0.8.recode.vcf.geno
+  -rw-r--r--. 1 srkeller users      1636 Mar 19 12:42 SSW_bamlist.txt.sum
+  -rw-r--r--. 1 srkeller users      1176 Mar 13 22:59 SSW_by24inds.txt
+  -rw-r--r--. 1 srkeller users 414372240 Mar 19 05:21 SSW_by24inds.txt.fas
+  -rw-r--r--. 1 srkeller users  32258162 Mar 19 05:21 SSW_by24inds.txt.vcf.gz
+  -rwxrwxr-x. 1 srkeller users       324 Mar 19 08:01 ssw_healthloc.txt
+  -rw-r--r--. 1 srkeller users       168 Mar 27 00:25 SSW_tidal.pops
+  -rwxrwxr-x. 1 srkeller users        87 Mar  6 17:22 unique_inds.txt
+  -rwxr-xr-x. 1 srkeller users      1604 Mar 27 00:24 vcf2admixture_SSW.spid
+  -rwxr-x--x. 1 srkeller users       223 Mar 27 00:24 vcf2geno.sh
+  [lashlock@pbio381 reads2snps]$ cd ~/
+  [lashlock@pbio381 ~]$ ll
+  total 2928
+  -rwxr-xr-x. 1 lashlock users    532 Mar 29 11:12 ADMIX.sh
+  -rw-r--r--. 1 lashlock users      0 Mar 29 11:12 chooseK.txt
+  drwxr-xr-x. 2 lashlock users   4096 Feb  6 14:16 fastqc_out
+  -rw-r--r--. 1 lashlock users 452371 Mar 20 10:40 H_AlleleFreqs.frq
+  -rw-r--r--. 1 lashlock users    423 Mar 20 10:40 H_AlleleFreqs.log
+  -rw-r--r--. 1 lashlock users     24 Mar  8 11:15 HOneSampPerInd2.txt
+  -rw-r--r--. 1 lashlock users     96 Mar  8 11:08 HOneSampPerInd.txt
+  -rw-r--r--. 1 lashlock users     24 Mar 20 10:33 H_SampleIDs.txt
+  -rw-r--r--. 1 lashlock users    642 Mar 20 10:42 HvS_Fst.log
+  -rw-r--r--. 1 lashlock users 114992 Mar 20 10:42 HvS_Fst.weir.fst
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log10.out
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log1.out
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log2.out
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log3.out
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log4.out
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log5.out
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log6.out
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log7.out
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log8.out
+  -rw-r--r--. 1 lashlock users    674 Mar 29 11:12 log9.out
+  drwxr-xr-x. 3 lashlock users   4096 Mar  6 11:07 mydata
+  -rw-r--r--. 1 lashlock users 207911 Mar  8 10:37 out.hwe
+  -rw-r--r--. 1 lashlock users    300 Mar  8 11:25 out.log
+  -rw-r--r--. 1 lashlock users    332 Mar 29 10:58 PGDSpider-cli.log
+  -rw-r--r--. 1 lashlock users 483033 Mar 20 10:40 S_AlleleFreqs.frq
+  -rw-r--r--. 1 lashlock users    424 Mar 20 10:40 S_AlleleFreqs.log
+  drwxr-xr-x. 2 lashlock users   4096 Feb 17 13:36 scripts
+  -rw-r--r--. 1 lashlock users     42 Mar  8 11:16 SOneSampPerInd2.txt
+  -rw-r--r--. 1 lashlock users    168 Mar  8 11:10 SOneSampPerInd.txt
+  -rw-r--r--. 1 lashlock users     42 Mar 20 10:37 S_SampleIDs.txt
+  -rw-r--r--. 1 lashlock users    436 Mar  8 10:33 SSW_all_biallelic.MAF0.02.Miss0                                                                                  .8.log
+  -rw-r--r--. 1 lashlock users    438 Mar 20 10:27 SSW_all_biallelic.MAF0.02Miss0.                                                                                  8.log
+  -rw-r--r--. 1 lashlock users 943565 Mar 20 10:27 SSW_all_biallelic.MAF0.02Miss0.                                                                                  8.recode.vcf
+  -rw-r--r--. 1 lashlock users 132925 Mar 29 10:58 SSW_all_biallelic.MAF0.02Miss0.                                                                                  8.recode.vcf.geno
+  -rw-r--r--. 1 lashlock users  76352 Mar  8 10:33 SSW_all_biallelic.MAF0.02.Miss0                                                                                  .8.recode.vcf.gz
+  -rw-r--r--. 1 lashlock users    312 Mar 29 10:58 SSW.ind
+  -rw-r--r--. 1 lashlock users 445407 Mar 29 10:58 SSW.snp
+  -rw-r--r--. 1 lashlock users    168 Mar 29 10:38 SSW_tidal.pops
+  -rwxr-xr-x. 1 lashlock users   1604 Mar 29 10:39 vcf2admixture_SSW.spid
+  -rwxr-x--x. 1 lashlock users    274 Mar 29 10:59 vcf2geno.sh
+  [lashlock@pbio381 ~]$ vim SSW_all_biallelic.MAF0.02Miss0.8.recode.vcf
+  [lashlock@pbio381 ~]$ cd /data/project_data/assembly/08-11-35-36_cl20_longest_orfs_gene.cds
+  -bash: cd: /data/project_data/assembly/08-11-35-36_cl20_longest_orfs_gene.cds: Not a directory
+  [lashlock@pbio381 ~]$ vim /data/project_data/assembly/08-11-35-36_cl20_longest_orfs_gene.cds
+
+  ```
+
+  We searched in the cds file to find the outliers we found in our OutFLANK analysis
+
+  Then we blasted the sequence on NCBI 
+
+  
+
 ------
 <div id='id-section16'/>
 ### Page 16:
@@ -1724,4 +1994,292 @@ legend("bottomleft", cex=1, legend=c("Metazoans", "Echinoderms", "P. ochraceus")
 
 ------
 
+  ```
+
+
+
+------
+
+<div id='id-section16'/>
+
+### Page 16:
+
+- Copied original unfiltered vcf file into my home directory.... will try a few different filtering approaches
+- filter for biallelic snps
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --min-alleles 2 --max-alleles 2
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 57180 out of a possible 7486938 Sites
+```
+
+- Filter for a minor allele frequency of 0.02
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --maf 0.02
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 3441637 out of a possible 7486938 Sites
+```
+
+- Max missing of 20%
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --max-missing 0.8
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 353902 out of a possible 7486938 Sites
+```
+
+- Max missing of 10%
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --max-missing 0.9
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 261702 out of a possible 7486938 Sites
+Run Time = 103.00 seconds
+```
+
+- Max missing of 15%
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --max-missing 0.85
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 307795 out of a possible 7486938 Sites
+```
+
+- More stringent minor allele frequency
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --maf 0.04   --maf 0.04
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 3434312 out of a possible 7486938 Sites
+```
+
+- First data set will filter by
+  - maf 0.04
+  - biallelic loci
+  - max missing of 0.85
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --min-alleles 2 --max-alleles 2 --maf 0.04 --max-missing 0.85
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 2005 out of a possible 7486938 Sites
+```
+
+- Second set...
+  - take out hwe deviants
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --min-alleles 2 --max-alleles 2 --maf 0.04 --max-missing 0.85 --hwe 0.05
+
+After filtering, kept 24 out of 24 Individuals
+After filtering, kept 1916 out of a possible 7486938 Sites
+
+```
+
+
+
+- Make two separate recode files 
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --remove-indv 37 --remove-indv 38 --min-alleles 2 --max-alleles 2 --maf 0.04 --max-missing 0.85 --recode --out ~/filteredSNPS1.0
+
+After filtering, kept 24 out of 24 Individuals
+Outputting VCF file...
+After filtering, kept 1945 out of a possible 7486938 Sites
+```
+
+```
+[lashlock@pbio381 ~]$ vcftools --vcf SSW_by24inds.txt.vcf --remove-indv 37 --remove-indv 38 --min-alleles 2 --max-alleles 2 --maf 0.04 --max-missing 0.85 --hwe 0.05 --recode --out ~/filteredSNPS2.0
+
+After filtering, kept 24 out of 24 Individuals
+Outputting VCF file...
+After filtering, kept 1861 out of a possible 7486938 Sites
+```
+
+- Now, time to analyze your vcf files
+- Calculate allele frequencies for healthy and sick individuals
+
+```
+ vcftools --vcf filteredSNPS1.0.recode.vcf --freq2 --keep H_SampleIDs.txt --out H_alleleFreqs1.0
+ vcftools --vcf filteredSNPS1.0.recode.vcf --freq2 --keep S_SampleIDs.txt --out S_alleleFreqs1.0
+ vcftools --vcf filteredSNPS2.0.recode.vcf --freq2 --keep H_SampleIDs.txt --out H_alleleFreqs2.0
+ vcftools --vcf filteredSNPS2.0.recode.vcf --freq2 --keep S_SampleIDs.txt --out S_alleleFreqs2.0
+
+```
+
+- Calculate Fst for healthy and sick individuals
+
+```
+vcftools --vcf filteredSNPS1.0.recode.vcf --weir-fst-pop H_SampleIDs.txt --weir-fst-pop S_SampleIDs.txt --out HvS_Fst_1.0
+
+vcftools --vcf filteredSNPS2.0.recode.vcf --weir-fst-pop H_SampleIDs.txt --weir-fst-pop S_SampleIDs.txt --out HvS_Fst_2.0
+```
+
+ ```
+Next step is to recreate your vcf files removing the mm individuals
+
+--remove-indivs ## (corresponds to numbers in text file)
+ ```
+
+
+
+------
+
+<div id='id-section17'/>
+
+### Page 17:
+
+Review of pipeline
+
+1. Processing data
+   1. using fastq files and program Trimmomatic
+2. Transcriptome assembly
+   1. fasta file using Trinity
+3. Annotation
+   1. fasta file using BLAST
+4. Map reads
+   1. sam files using BWA
+5. Differential Gene Expression Analysis
+   1. Using counts tables and DESEQ2
+6. Population Genomics
+   1. using vcf file analyzing with PCA, DAPC, and Admixture
+
+We've done the DGE and popgen analyses, and now we want to know biological function...
+
+- Functional Enrichment Analysis
+
+Annotation Methods
+
+- Blast2GO
+  - paid
+- Brute force
+  - blast and annotate yourself
+- Pipelines
+  - Trinotate
+
+Generic pipeline
+
+1. .fasta file with genes
+
+2. use existing databases to find out what these genes are
+
+   1. Using BLAST
+      1. Using thresholds (e value cutoff)
+   2. Diamond
+
+3. Blast output
+
+   1. e value (smaller better)
+   2. bit score (bigger better)
+   3. % identity
+   4. length
+
+   ​
+
+Databases
+
+- NCBI NR
+  - non redundant protein database
+- UniProt
+  - proteins and their associated terms
+
+Coding Session Notes
+
+---------------
+
+<div id='id-section17'/>
+
+### Page 17:
+
+R code for Assignment 3
+
+```
+##Ecological Genomics Assignment 3
+##Lauren Ashlock
+
+install.packages("vcfR")
+install.packages("adegenet")
+
+library(adegenet)
+library(vcfR)
+
+#read in vcf files
+
+vcf1.0 <- read.vcfR("filteredSNPS1.0.recode.vcf")
+
+vcf2.0 <- read.vcfR("filteredSNPS2.0.recode.vcf")
+
+gl1.0 <- vcfR2genlight(vcf1.0)
+
+gl2.0 <- vcfR2genlight(vcf2.0)
+
+ssw_meta <- read.table("ssw_healthloc.txt", header=T) # read in the metadata
+ssw_meta <- ssw_meta[order(ssw_meta$Individual),] # sort it by Individual ID
+
+#data check
+gl1.0$ind.names
+ssw_meta$Individual
+ssw_meta$Trajectory
+str(gl1.0$other)
+
+
+gl1.0$pop <- ssw_meta$Location # assign locality info
+gl1.0$other <- as.list(ssw_meta$Trajectory) # assign disease status
+
+gl2.0$pop <- ssw_meta$Location # assign locality info
+gl2.0$other <- as.list(ssw_meta$Trajectory) # assign disease status
+
+# Now, let's compute the PCA on the SNP genotypes and plot it:
+pca1.0 <- glPca(gl1.0, nf=4, parallel=F) # nf = number of PC axes to retain (here, 4)
+
+pca2.0 <- glPca(gl2.0, nf=4, parallel=F) # nf = number of PC axes to retain (here, 4)
+
+
+# Perhaps we want to show disease status instead of locality:
+plot(pca1.0$scores[,1], pca1.0$scores[,2], 
+     cex=2, pch=20, col=as.factor(ssw_meta$Trajectory), 
+     xlab="Principal Component 1", 
+     ylab="Principal Component 2", 
+     main="PCA on Dataset 1.0 (Freq missing=15%; 1945 SNPs)")
+legend("topleft", 
+       legend=unique(ssw_meta$Trajectory), 
+       pch=20, 
+       col=as.factor(unique(ssw_meta$Trajectory)))
+
+plot(pca2.0$scores[,1], pca2.0$scores[,2], 
+     cex=2, pch=20, col=as.factor(ssw_meta$Trajectory), 
+     xlab="Principal Component 1", 
+     ylab="Principal Component 2", 
+     main="PCA on Dataset 2.0 (Freq missing=15%; 1861 SNPs)")
+legend("topleft", 
+       legend=unique(ssw_meta$Trajectory), 
+       pch=20, 
+       col=as.factor(unique(ssw_meta$Trajectory)))
+
+
+
+# Which SNPs load most strongly on the 1st PC axis?
+loadingplot(abs(pca1.0$loadings[,1]),
+            threshold=quantile(abs(pca1.0$loadings), 0.999), main="Loading Plot PCA 1.0")
+
+# Get their locus names
+gl1.0$loc.names[which(abs(pca1.0$loadings)>quantile(abs(pca1.0$loadings), 0.999))]
+
+# Which SNPs load most strongly on the 1st PC axis?
+loadingplot(abs(pca2.0$loadings[,1]),
+            threshold=quantile(abs(pca2.0$loadings), 0.999), main="Loading Plot PCA 2.0")
+
+# Get their locus names
+gl2.0$loc.names[which(abs(pca2.0$loadings)>quantile(abs(pca2.0$loadings), 0.999))]
+
+```
+
+------------
 
