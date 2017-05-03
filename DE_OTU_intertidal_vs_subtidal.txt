@@ -1,0 +1,7 @@
+"baseMean"	"log2FoldChange"	"lfcSE"	"stat"	"pvalue"	"padj"	"Kingdom"	"Phylum"	"Class"	"Order"	"Family"	"Genus"
+"New.ReferenceOTU3915"	0.850351599064884	3.13441191050001	0.783556701668199	4.00023623539538	6.32792826595665e-05	0.00105250235443973	"Bacteria"	"Proteobacteria"	"Gammaproteobacteria"	"Alteromonadales"	"Alteromonadaceae"	NA
+"New.ReferenceOTU5252"	339.722173556525	-3.21071940033869	0.707545144507887	-4.53782974169347	5.6836117543244e-06	0.000118772912301907	"Bacteria"	"Proteobacteria"	"Gammaproteobacteria"	"Pseudomonadales"	"Pseudomonadaceae"	"Pseudomonas"
+"New.ReferenceOTU2459"	12.6365041777384	7.46373127603718	0.666466182763198	11.1989647323023	4.12526010368037e-29	1.12069566149983e-26	"Bacteria"	"Proteobacteria"	"Gammaproteobacteria"	"Pseudomonadales"	"Pseudomonadaceae"	"Pseudomonas"
+"543958"	60.3382473727445	8.48620359815838	0.579209351047594	14.6513580673546	1.32049680965911e-48	1.07620489987218e-45	"Bacteria"	"Proteobacteria"	"Gammaproteobacteria"	"Pseudomonadales"	"Pseudomonadaceae"	"Pseudomonas"
+"1145241"	76.1033013368024	-1.98335977967	0.443526557418492	-4.47179485984779	7.75658165721091e-06	0.000155067755805843	"Bacteria"	"Proteobacteria"	"Gammaproteobacteria"	"Oceanospirillales"	"Oceanospirillaceae"	"Marinomonas"
+"3664781"	18.2013540840313	-2.89750853531534	0.57141981997149	-5.07071759509481	3.96318496118785e-07	9.78786588899423e-06	"Bacteria"	"Proteobacteria"	"Gammaproteobacteria"	"Oceanospirillales"	"Oceanospirillaceae"	"Marinomonas"

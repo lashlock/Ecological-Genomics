@@ -30,11 +30,11 @@ Notes from class material,and class project will populate this notebook.
 * [Page 15:2017-3-04](#id-section15).Fst
 * [Page 16:2017-04-04](#id-section16).HW #3 Notes
 * [Page 17:2017-05-04](#id-section17).Assignment 3 R code
-* [Page 18:](#id-section18).
-* [Page 19:](#id-section19).
-* [Page 20:](#id-section20).
-* [Page 21:](#id-section21).
-* [Page 22:](#id-section22).
+* [Page 18:2017-10-04](#id-section18). Metagenomics
+* [Page 19:2017-12-04](#id-section19).Microbiome
+* [Page 20:2017-12-04](#id-section20).Review of Pipeline
+* [Page 21:2017-19-04](#id-section21).Microbiome
+* [Page 22:2017-02-05](#id-section22).Final Project Script
 * [Page 23:](#id-section23).
 * [Page 24:](#id-section24).
 * [Page 25:](#id-section25).
@@ -1855,231 +1855,6 @@ F statistics
 ------
 <div id='id-section16'/>
 ### Page 16:
-------
-<div id='id-section17'/>
-### Page 17:
-
-R Script for Assignment 3
-
-```
-##Ecological Genomics Assignment 3
-##Lauren Ashlock
-
-install.packages("vcfR")
-install.packages("adegenet")
-
-library(adegenet)
-library(vcfR)
-
-#read in vcf files
-
-vcf1.0 <- read.vcfR("filteredSNPS1.0.recode.vcf")
-
-vcf2.0 <- read.vcfR("filteredSNPS2.0.recode.vcf")
-
-gl1.0 <- vcfR2genlight(vcf1.0)
-
-gl2.0 <- vcfR2genlight(vcf2.0)
-
-ssw_meta <- read.table("ssw_healthloc.txt", header=T) # read in the metadata
-ssw_meta <- ssw_meta[order(ssw_meta$Individual),] # sort it by Individual ID
-
-#data check
-gl1.0$ind.names
-ssw_meta$Individual
-ssw_meta$Trajectory
-str(gl1.0$other)
-
-
-gl1.0$pop <- ssw_meta$Location # assign locality info
-gl1.0$other <- as.list(ssw_meta$Trajectory) # assign disease status
-
-gl2.0$pop <- ssw_meta$Location # assign locality info
-gl2.0$other <- as.list(ssw_meta$Trajectory) # assign disease status
-
-# Now, let's compute the PCA on the SNP genotypes and plot it:
-pca1.0 <- glPca(gl1.0, nf=4, parallel=F) # nf = number of PC axes to retain (here, 4)
-
-pca2.0 <- glPca(gl2.0, nf=4, parallel=F) # nf = number of PC axes to retain (here, 4)
-
-
-# Perhaps we want to show disease status instead of locality:
-plot(pca1.0$scores[,1], pca1.0$scores[,2], 
-     cex=2, pch=20, col=as.factor(ssw_meta$Trajectory), 
-     xlab="Principal Component 1", 
-     ylab="Principal Component 2", 
-     main="PCA on Dataset 1.0 (Freq missing=15%; 1945 SNPs)")
-legend("topleft", 
-       legend=unique(ssw_meta$Trajectory), 
-       pch=20, 
-       col=as.factor(unique(ssw_meta$Trajectory)))
-
-plot(pca2.0$scores[,1], pca2.0$scores[,2], 
-     cex=2, pch=20, col=as.factor(ssw_meta$Trajectory), 
-     xlab="Principal Component 1", 
-     ylab="Principal Component 2", 
-     main="PCA on Dataset 2.0 (Freq missing=15%; 1861 SNPs)")
-legend("topleft", 
-       legend=unique(ssw_meta$Trajectory), 
-       pch=20, 
-       col=as.factor(unique(ssw_meta$Trajectory)))
-
-
-
-# Which SNPs load most strongly on the 1st PC axis?
-loadingplot(abs(pca1.0$loadings[,1]),
-            threshold=quantile(abs(pca1.0$loadings), 0.999), main="Loading Plot PCA 1.0")
-
-# Get their locus names
-gl1.0$loc.names[which(abs(pca1.0$loadings)>quantile(abs(pca1.0$loadings), 0.999))]
-
-# Which SNPs load most strongly on the 1st PC axis?
-loadingplot(abs(pca2.0$loadings[,1]),
-            threshold=quantile(abs(pca2.0$loadings), 0.999), main="Loading Plot PCA 2.0")
-
-# Get their locus names
-gl2.0$loc.names[which(abs(pca2.0$loadings)>quantile(abs(pca2.0$loadings), 0.999))]
-```
-
-
-
-------
-<div id='id-section18'/>
-### Page 18:
-------
-<div id='id-section19'/>
-### Page 19:
-------
-<div id='id-section20'/>
-### Page 20:
-------
-<div id='id-section21'/>
-### Page 21:
-------
-<div id='id-section22'/>
-### Page 22:
-------
-<div id='id-section23'/>
-### Page 23:
-------
-<div id='id-section24'/>
-### Page 24:
-------
-<div id='id-section25'/>
-### Page 25:
-------
-<div id='id-section26'/>
-### Page 26:
-------
-<div id='id-section27'/>
-### Page 27:
-------
-<div id='id-section28'/>
-### Page 28:
-------
-<div id='id-section29'/>
-### Page 29:
-------
-<div id='id-section30'/>
-### Page 30:
-------
-<div id='id-section31'/>
-### Page 31:
-------
-<div id='id-section32'/>
-### Page 32:
-------
-<div id='id-section33'/>
-### Page 33:
-------
-<div id='id-section34'/>
-### Page 34:
-------
-<div id='id-section35'/>
-### Page 35:
-------
-<div id='id-section36'/>
-### Page 36:
-------
-<div id='id-section37'/>
-### Page 37:
-------
-<div id='id-section38'/>
-### Page 38:
-------
-<div id='id-section39'/>
-### Page 39:
-------
-<div id='id-section40'/>
-### Page 40:
-------
-<div id='id-section41'/>
-### Page 41:
-------
-<div id='id-section42'/>
-### Page 42:
-------
-<div id='id-section43'/>
-### Page 43:
-------
-<div id='id-section44'/>
-### Page 44:
-------
-<div id='id-section45'/>
-### Page 45:
-------
-<div id='id-section46'/>
-### Page 46:
-------
-<div id='id-section47'/>
-### Page 47:
-------
-<div id='id-section48'/>
-### Page 48:
-------
-<div id='id-section49'/>
-### Page 49:
-------
-<div id='id-section50'/>
-### Page 50:
-------
-<div id='id-section51'/>
-### Page 51:
-------
-<div id='id-section52'/>
-### Page 52:
-------
-<div id='id-section53'/>
-### Page 53:
-------
-<div id='id-section54'/>
-### Page 54:
-------
-<div id='id-section55'/>
-### Page 55:
-------
-<div id='id-section56'/>
-### Page 56:
-------
-<div id='id-section57'/>
-### Page 57:
-------
-<div id='id-section58'/>
-### Page 58:
-------
-<div id='id-section59'/>
-### Page 59:
-------
-<div id='id-section60'/>
-### Page 60:
-
-------
-
-------
-
-<div id='id-section16'/>
-
-### Page 16:
 
 - Copied original unfiltered vcf file into my home directory.... will try a few different filtering approaches
 - filter for biallelic snps
@@ -2199,83 +1974,19 @@ vcftools --vcf filteredSNPS1.0.recode.vcf --weir-fst-pop H_SampleIDs.txt --weir-
 vcftools --vcf filteredSNPS2.0.recode.vcf --weir-fst-pop H_SampleIDs.txt --weir-fst-pop S_SampleIDs.txt --out HvS_Fst_2.0
 ```
 
- ```
+```
 Next step is to recreate your vcf files removing the mm individuals
 
 --remove-indivs ## (corresponds to numbers in text file)
- ```
+```
 
 
 
 ------
-
 <div id='id-section17'/>
-
 ### Page 17:
 
-Review of pipeline
-
-1. Processing data
-   1. using fastq files and program Trimmomatic
-2. Transcriptome assembly
-   1. fasta file using Trinity
-3. Annotation
-   1. fasta file using BLAST
-4. Map reads
-   1. sam files using BWA
-5. Differential Gene Expression Analysis
-   1. Using counts tables and DESEQ2
-6. Population Genomics
-   1. using vcf file analyzing with PCA, DAPC, and Admixture
-
-We've done the DGE and popgen analyses, and now we want to know biological function...
-
-- Functional Enrichment Analysis
-
-Annotation Methods
-
-- Blast2GO
-  - paid
-- Brute force
-  - blast and annotate yourself
-- Pipelines
-  - Trinotate
-
-Generic pipeline
-
-1. .fasta file with genes
-
-2. use existing databases to find out what these genes are
-
-   1. Using BLAST
-      1. Using thresholds (e value cutoff)
-   2. Diamond
-
-3. Blast output
-
-   1. e value (smaller better)
-   2. bit score (bigger better)
-   3. % identity
-   4. length
-
-   ​
-
-Databases
-
-- NCBI NR
-  - non redundant protein database
-- UniProt
-  - proteins and their associated terms
-
-Coding Session Notes
-
----------------
-
-<div id='id-section17'/>
-
-### Page 17:
-
-R code for Assignment 3
+R Script for Assignment 3
 
 ```
 ##Ecological Genomics Assignment 3
@@ -2355,8 +2066,1208 @@ loadingplot(abs(pca2.0$loadings[,1]),
 
 # Get their locus names
 gl2.0$loc.names[which(abs(pca2.0$loadings)>quantile(abs(pca2.0$loadings), 0.999))]
+```
+
+
+
+------
+<div id='id-section18'/>
+### Page 18:
+
+Use 16s Amplicon sequencing to perform metagenomic analyses
+
+- What microbes are present?
+- What are they doing?
+
+Microbiome: Assemblage of microbial taxa associated with a host or environment
+
+"Who is there?"
+
+- pathogens
+- symbionts (mutualists/commensals)
+
+Holobiont: the host together with its microbiome
+
+How to measure a microbiome?
+
+1. Gene for 16s rRNA (forms small subunit of ribosome)
+2. ITS: internal transcribed spacer
+   1. spacer between genes that code for subunits of rRNA
+
+Metagenomics: Looks at the genes being expressed by the microbiome. Focuses on function
+
+"What are they doing?"
+
+1. RNAseq or shot-gun DNA-seq
+
+Processing:
+
+1. Sample tissue and extract DNA/RNA
+2. PCR target gene (16s - only found in bacteria and archaea) 
+3. Barcode amplified fragments and ligate adapters and send for sequencing
+4. Cluster sequences based on similarity (97% similarity within OTU)
+5. Blast OTUs to database, determine taxonomy
+
+Microbial revolution: most microbes aren't culturable. Only studying microbes that can be cultured... biased. Sequencing has demonstrated the diversity of microbes that have not previously been described. 
+
+
+
+Big Questions:
+
+1. Is there a core microbiome shared in common among organisms?
+2. How much diversity is unique to individuals, populations, communities?
+3. Heritability?
+4. Evolution of microbiome? 
+5. Adaptive vs maladaptive microbiomes?
+6. Can patterns within microbiome predict phenotype?
+
+Coding session
+
+```
+login as: lashlock
+lashlock@pbio381.uvm.edu's password:
+Last login: Wed Apr  5 17:17:57 2017 from ip177051.uvm.edu
+[lashlock@pbio381 ~]$ mkdir 16s_analysis
+[lashlock@pbio381 ~]$ cd 16s_analysis/
+[lashlock@pbio381 16s_analysis]$ cd /data/project_data/16s/
+[lashlock@pbio381 16s]$ ll
+total 40
+drwxr-xr-x. 2 mlloyd users    44 Mar 30 10:45 core_diversity_analysis
+drwxr-xr-x. 2 mlloyd users  4096 Mar 29 09:32 data_files
+-rw-r--r--. 1 mlloyd users 10516 Mar 27 10:47 map.txt
+drwxr-xr-x. 8 mlloyd users  4096 Mar 28 12:46 otu_table
+-rw-r--r--. 1 mlloyd users    47 Mar 28 14:42 remove-R1.sh
+-rw-r--r--. 1 mlloyd users    40 Mar 28 14:24 remove-underscore.sh
+-rw-r--r--. 1 mlloyd users  8733 Mar 29 10:22 R_map.txt
+[lashlock@pbio381 16s]$ head map.text
+head: cannot open ‘map.text’ for reading: No such file or directory
+[lashlock@pbio381 16s]$ head map.txt
+#SampleID       BarcodeSequence LinkerPrimerSequence    Day     individual     P                                                                                       henotype        Pheno_num       Final_phenotype Trajectory      Tide    Descript                                                                                       ion
+01-5-05                 0       1       Sick    1       Sick    SS      intertid                                                                                       al      1-5/5
+01-5-08                 3       1       Sick    3       Sick    SS      intertid                                                                                       al      1-5/8
+01-5-11                 6       1       Dead    5       Sick    SS      intertid                                                                                       al      1-5/11
+02-5-05                 0       2       Sick    1       Sick    SS      intertid                                                                                       al      2-5/5
+02-5-08                 3       2       Sick    2       Sick    SS      intertid                                                                                       al      2-5/8
+02-5-11                 6       2       Sick    2       Sick    SS      intertid                                                                                       al      2-5/11
+02-5-14                 9       2       Sick    2       Sick    SS      intertid                                                                                       al      2-5/14
+02-5-17                 12      2       Sick    2       Sick    SS      intertid                                                                                       al      2-5/17
+02-5-20                 15      2       Dead    5       Sick    SS      intertid                                                                                       al      2-5/20
+[lashlock@pbio381 16s]$ :set nowrap
+-bash: :set: command not found
+[lashlock@pbio381 16s]$ vim map.txt
+[lashlock@pbio381 16s]$ cd ~/
+[lashlock@pbio381 ~]$ cd 16s_analysis
+[lashlock@pbio381 16s_analysis]$ ll
+total 0
+[lashlock@pbio381 16s_analysis]$ validate_mapping_file.py -m /data/project_data/16s/map.txt -o validate_map -p -b
+Errors and/or warnings detected in mapping file.  Please check the log and html file for details.
+[lashlock@pbio381 16s_analysis]$ ll
+total 0
+drwxr-xr-x. 2 lashlock users 96 Apr 10 10:23 validate_map
+[lashlock@pbio381 16s_analysis]$ cd validate_map/
+[lashlock@pbio381 validate_map]$ ll
+total 524
+-rw-r--r--. 1 lashlock users  10180 Apr 10 10:23 map_corrected.txt
+-rw-r--r--. 1 lashlock users 398821 Apr 10 10:23 map.html
+-rw-r--r--. 1 lashlock users  68678 Apr 10 10:23 map.log
+-rw-r--r--. 1 lashlock users  50732 Apr 10 10:23 overlib.js
+[lashlock@pbio381 validate_map]$ multiple_join_paired_ends.py -i /data/project_data/16s/data_files -o ~/16s_analysis/joined --read1_indicator _R1 --read2_indicator _R2
+[lashlock@pbio381 validate_map]$ ll
+total 524
+-rw-r--r--. 1 lashlock users  10180 Apr 10 10:23 map_corrected.txt
+-rw-r--r--. 1 lashlock users 398821 Apr 10 10:23 map.html
+-rw-r--r--. 1 lashlock users  68678 Apr 10 10:23 map.log
+-rw-r--r--. 1 lashlock users  50732 Apr 10 10:23 overlib.js
+[lashlock@pbio381 validate_map]$ cd ~/
+[lashlock@pbio381 ~]$ cd 16s_analysis/
+[lashlock@pbio381 16s_analysis]$ ll
+total 4
+drwxr-xr-x. 26 lashlock users 4096 Apr 10 10:39 joined
+drwxr-xr-x.  2 lashlock users   96 Apr 10 10:23 validate_map
+[lashlock@pbio381 16s_analysis]$ cd ~/
+[lashlock@pbio381 ~]$ ll
+total 1338280
+drwxr-xr-x. 4 lashlock users         50 Apr 10 10:33 16s_analysis
+-rwxr-xr-x. 1 lashlock users        532 Mar 29 11:12 ADMIX.sh
+-rw-r--r--. 1 lashlock users          0 Mar 29 11:12 chooseK.txt
+drwxr-xr-x. 2 lashlock users       4096 Feb  6 14:16 fastqc_out
+-rw-r--r--. 1 lashlock users        467 Apr  5 17:33 filteredSNPS1.0.log
+-rw-r--r--. 1 lashlock users     331705 Apr  5 17:33 filteredSNPS1.0.recode.vcf
+-rw-r--r--. 1 lashlock users        479 Apr  5 17:35 filteredSNPS2.0.log
+-rw-r--r--. 1 lashlock users     317278 Apr  5 17:35 filteredSNPS2.0.recode.vcf
+-rw-r--r--. 1 lashlock users     168185 Apr  4 15:19 H_alleleFreqs1.0.frq
+-rw-r--r--. 1 lashlock users        377 Apr  4 15:19 H_alleleFreqs1.0.log
+-rw-r--r--. 1 lashlock users     161084 Apr  4 15:21 H_alleleFreqs2.0.frq
+-rw-r--r--. 1 lashlock users        377 Apr  4 15:21 H_alleleFreqs2.0.log
+-rw-r--r--. 1 lashlock users     452371 Mar 20 10:40 H_AlleleFreqs.frq
+-rw-r--r--. 1 lashlock users        423 Mar 20 10:40 H_AlleleFreqs.log
+-rw-r--r--. 1 lashlock users         24 Mar  8 11:15 HOneSampPerInd2.txt
+-rw-r--r--. 1 lashlock users         96 Mar  8 11:08 HOneSampPerInd.txt
+-rw-r--r--. 1 lashlock users         24 Mar 20 10:33 H_SampleIDs.txt
+-rw-r--r--. 1 lashlock users        597 Apr  4 15:24 HvS_Fst_1.0.log
+-rw-r--r--. 1 lashlock users      50661 Apr  4 15:24 HvS_Fst_1.0.weir.fst
+-rw-r--r--. 1 lashlock users        596 Apr  4 15:25 HvS_Fst_2.0.log
+-rw-r--r--. 1 lashlock users      46389 Apr  4 15:25 HvS_Fst_2.0.weir.fst
+-rw-r--r--. 1 lashlock users        642 Mar 20 10:42 HvS_Fst.log
+-rw-r--r--. 1 lashlock users     114992 Mar 20 10:42 HvS_Fst.weir.fst
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log10.out
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log1.out
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log2.out
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log3.out
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log4.out
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log5.out
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log6.out
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log7.out
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log8.out
+-rw-r--r--. 1 lashlock users        674 Mar 29 11:12 log9.out
+drwxr-xr-x. 3 lashlock users       4096 Mar  6 11:07 mydata
+-rw-r--r--. 1 lashlock users     207911 Mar  8 10:37 out.hwe
+-rw-r--r--. 1 lashlock users        327 Apr  4 12:34 out.log
+-rw-r--r--. 1 lashlock users        332 Mar 29 10:58 PGDSpider-cli.log
+-rw-r--r--. 1 lashlock users     178095 Apr  4 15:20 S_alleleFreqs1.0.frq
+-rw-r--r--. 1 lashlock users        378 Apr  4 15:20 S_alleleFreqs1.0.log
+-rw-r--r--. 1 lashlock users     170327 Apr  4 15:22 S_alleleFreqs2.0.frq
+-rw-r--r--. 1 lashlock users        378 Apr  4 15:22 S_alleleFreqs2.0.log
+-rw-r--r--. 1 lashlock users     483033 Mar 20 10:40 S_AlleleFreqs.frq
+-rw-r--r--. 1 lashlock users        424 Mar 20 10:40 S_AlleleFreqs.log
+drwxr-xr-x. 2 lashlock users       4096 Feb 17 13:36 scripts
+-rw-r--r--. 1 lashlock users         42 Mar  8 11:16 SOneSampPerInd2.txt
+-rw-r--r--. 1 lashlock users        168 Mar  8 11:10 SOneSampPerInd.txt
+-rw-r--r--. 1 lashlock users         42 Mar 20 10:37 S_SampleIDs.txt
+-rw-r--r--. 1 lashlock users        436 Mar  8 10:33 SSW_all_biallelic.MAF0.02.Miss0.8.log
+-rw-r--r--. 1 lashlock users        438 Mar 20 10:27 SSW_all_biallelic.MAF0.02Miss0.8.log
+-rw-r--r--. 1 lashlock users     943565 Apr  3 10:55 SSW_all_biallelic.MAF0.02Miss0.8.recode.vcf
+-rw-r--r--. 1 lashlock users     132925 Mar 29 10:58 SSW_all_biallelic.MAF0.02Miss0.8.recode.vcf.geno
+-rw-r--r--. 1 lashlock users      76352 Mar  8 10:33 SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz
+-rw-r--r--. 1 lashlock users 1365923459 Apr  4 10:10 SSW_by24inds.txt.vcf
+-rw-r--r--. 1 lashlock users        312 Mar 29 10:58 SSW.ind
+-rw-r--r--. 1 lashlock users     445407 Mar 29 10:58 SSW.snp
+-rw-r--r--. 1 lashlock users        168 Mar 29 10:38 SSW_tidal.pops
+-rwxr-xr-x. 1 lashlock users       1604 Mar 29 10:39 vcf2admixture_SSW.spid
+-rwxr-x--x. 1 lashlock users        274 Mar 29 10:59 vcf2geno.sh
+[lashlock@pbio381 ~]$ cd 16s_analysis/
+[lashlock@pbio381 16s_analysis]$ ll
+total 4
+drwxr-xr-x. 26 lashlock users 4096 Apr 10 10:39 joined
+drwxr-xr-x.  2 lashlock users   96 Apr 10 10:23 validate_map
+[lashlock@pbio381 16s_analysis]$ cd joined/
+[lashlock@pbio381 joined]$ ll
+total 8
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:39 02_5-05_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:35 02_5-08_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:34 02_5-11_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:37 02_5-14_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:38 02_5-17_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:35 02_5-20_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:36 04_5-05_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:34 04_5-08_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:37 04_5-11_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:38 04_5-14_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:38 04_5-17_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:38 04_5-20_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:37 10_5-05_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:37 10_5-08_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:35 10_5-11_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:34 10_5-14_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:39 10_5-17_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:39 10_5-20_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:36 27_5-05_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:33 27_5-08_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:34 27_5-11_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:36 27_5-14_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:36 27_5-17_R1
+drwxr-xr-x. 2 lashlock users  101 Apr 10 10:35 27_5-20_R1
+-rw-r--r--. 1 lashlock users 7728 Apr 10 10:39 log_20170410103335.txt
+[lashlock@pbio381 joined]$ bash /data/project_data/16s/remove-underscore.sh
+[lashlock@pbio381 joined]$ bash /data/project_data/16s/remove-R1.sh
+[lashlock@pbio381 joined]$ cd 16s_analysis/
+-bash: cd: 16s_analysis/: No such file or directory
+[lashlock@pbio381 joined]$ cd ~/
+[lashlock@pbio381 ~]$ cd 16s_analysis/
+[lashlock@pbio381 16s_analysis]$ multiple_split_libraries_fastq.py -i ~/16s_analysis/joined -o ~/16s_analysis/filtered -m sampleid_by_file --include_input_dir_path --remove_filepath_in_name  --mapping_indicator ~/16s_analysis/map.txt
+^CTraceback (most recent call last):
+  File "/usr/bin/multiple_split_libraries_fastq.py", line 219, in <module>
+    main()
+  File "/usr/bin/multiple_split_libraries_fastq.py", line 216, in main
+    close_logger_on_success=True)
+  File "/usr/lib/python2.7/site-packages/qiime/workflow/util.py", line 114, in call_commands_serially
+    stdout, stderr, return_value = qiime_system_call(e[1])
+  File "/usr/lib/python2.7/site-packages/qcli/util.py", line 39, in qcli_system_call
+    stdout, stderr = proc.communicate()
+  File "/usr/lib64/python2.7/subprocess.py", line 800, in communicate
+    return self._communicate(input)
+  File "/usr/lib64/python2.7/subprocess.py", line 1401, in _communicate
+    stdout, stderr = self._communicate_with_poll(input)
+  File "/usr/lib64/python2.7/subprocess.py", line 1455, in _communicate_with_poll
+    ready = poller.poll()
+KeyboardInterrupt
+[lashlock@pbio381 16s_analysis]$ multiple_split_libraries_fastq.py -i ~/16s_analysis/joined -o ~/16s_analysis/filtered -m sampleid_by_file --include_input_dir_path --remove_filepath_in_name  --mapping_indicator /data/project_data/16s/map.txt
+[lashlock@pbio381 16s_analysis]$ cd filtered/
+[lashlock@pbio381 filtered]$ ll
+total 933844
+-rw-r--r--. 1 lashlock users      5771 Apr 10 11:01 histograms.txt
+-rw-r--r--. 1 lashlock users      6471 Apr 10 10:48 log_20170410104834.txt
+-rw-r--r--. 1 lashlock users      6533 Apr 10 11:01 log_20170410105128.txt
+-rw-r--r--. 1 lashlock users 956183153 Apr 10 11:01 seqs.fna
+-rw-r--r--. 1 lashlock users     36908 Apr 10 11:01 split_library_log.txt
+[lashlock@pbio381 filtered]$ head seqs.fna
+>10-5-17_0 M02780:138:000000000-ATTB1:1:1101:12235:1197 1:N:0:ACTGAGCG+TATCCTCT orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACGGGGGGCAGCAGCTAAGAATCTTCCGCAATGGGCGAAAGCCTGACGGAGCGACACCGCGTGAGTGATGAAGGTCGAGAGGTTGTAAGACTCTTTTATTACCGAAGAATAAGTATTATGCGAAAGTATAATACGATGACATTAAGTGATGAATAAGCCCTGGCTAATTACGTGCCAGCAGCCGCGGTAATACGTAAGGGGCAAGCGTTGTTCGGAATCATTGGGCGTAAAGGGCGCGTAGGCGGATTAGAAGGCATTATGATAAAGGTCATAGCTCAACTATGGTGTATTGTAATGAACCTCTAGTCTTGAGTTTTGGAGAGGGAACTGGAATTCTTGGTGTAAGGGTGAAATCTGTAGATATCAAGAAGAACATCAGTGGCGAAGGCGAGTTCCCAGCCAAAAACTGACGCTGAGGTGCGAAAGCGTGGGTATCGAACAGGATTAGATACCCCAGTAGTC
+>10-5-17_1 M02780:138:000000000-ATTB1:1:1101:12229:1216 1:N:0:ACTGAGCG+TATCCTCT orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACGGGGGGCAGCAGCTAAGAATCTTCCGCAATGGGCGAAAGCCTGACGGAGCGACACCGCGTGAGTGATGAAGGTCGAGAGGTTGTAAGACTCTTTTATTACCGAGGAATAAGTATTATGCGAAAGTATAATACGATGACATTAAGTGATGAATAAGCCCTGGCTAATTACGTGCCAGCAGCCGCGGTAATACGTAAGGGGCAAGCGTTGTTCGGAATCATTGGGCGTAAAGGGCGCGTAGGCGGATTAGAAGGCATTATGATAAAGGTCATAGCTCAACTATGGTGTATTGTAATGAACCTCTAGTCTTGAGTTTTGGAGAGGGAACTGGAATTCTTGGTGTAAGGGTGAAATCTGTAGATATCAAGAAGAACATCAGTGGCGAAGGCGAGTTCCCAGCCAAAAACTGACGCTGAGGTGCGAAAGCGTGGGTATCGAACAGGATTAGATACCCCAGTAGTC
+>10-5-17_2 M02780:138:000000000-ATTB1:1:1101:9797:1235 1:N:0:ACTGAGCG+TATCCTCT orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACGGGCGGCAGCAGCTAAGAATCTTCCGCAATGGGCGAAAGCCTGACGGAGCGACACCGCGTGAGTGATGAAGGTCGAGAGGTTATAAAACTCTTTTATTACCGAAGAATAAGTATTATGCGAAAGTATAATACGATGACATTAAGTGATGAATAAGCCCTGGCTAATTACGTGCCAGCAGCCGCGGTAATACGTAAGGGGCAAGCGTTGTTCGGAATCATTGGGCGTAAAGGGCGCGTAGGCGGATTAGAAGGCATTATGATAAAGGTCATAGCTCAACTATGGTGTATTGTAATGAACCTCTAGTCTTGAGTTTTGGAGAGGGAACTGGAATTCTTGGTGTAAGGGTGAAATCTGTAGATATCAAGAAGAACATCGGTGGCGAAGGCGAGTTCCCAGCCAAAAACTGACGCTGAGGTGCGAAAGCGTGGGTATCGAACAGGATTAGATACCCGTGTAGTC
+>10-5-17_3 M02780:138:000000000-ATTB1:1:1101:10894:1237 1:N:0:ACTGAGCG+TATCCTCT orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACGGGCGGCAGCAGTGGGGAATCTTGCACAATGGGCGAAAGCCTGATGCAGCCATGCCGCGTGAATGATGAAGGCCTTAGGGTTGTAAAATTCTTTCGCTAGGGATGATAATGACAGTACCTAGTAAAGAAGCACCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAAGGGTGCTAGCGTTGTTCGGAATTACTGGGCGTAAAGCGCGCGTAGGCGGACTATTAAGTCAGATGTGAAATCCCAAGGCTCAACCTTGGAACTGCATTTGAAACTGGTAGTCTAGAGATCAGGAGAGGTTGGCGGAATACCGAGTGTAGAGGTGAAATTCGTAGATATTCGGTGGAACACCAGTGGCGAAGGCGGCCAACTGGACTGATACTGACGCTGAGGCGCGAAAGTGTGGGGAGCAAACAGGATTAGATACCCGTGTAGTC
+>10-5-17_4 M02780:138:000000000-ATTB1:1:1101:14644:1265 1:N:0:ACTGAGCG+TATCCTCT orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACGGGAGGCAGCAGCTAAGAATCTTCCGCAATGGGCGAAAGCCTGACGGAGCGACACCGCGTGAGTGATGAAGGTCGAGAGGTTGTAAGACTCTTTTATTACCGAGGAATAAGTATTATGCGAAAGTATAATACGATGACATTAAGTGATGAATAAGCCCTGGCTAATCACGTGCCTGCAGCCGCGGTAATACGTAAGGGGCAAGCGTTGTTCGGAATCATTGGGCGTAAAGGGCGCGTAGGCGGATTAGAAGGCATTATGATAAAGGTCATAGCTCAACTATGGTGTATTGTAATGAACCTCTAGTCTTGAGTTTTGGAGAGGGAACTGGAATTCTTGGTGTAAGGGTGAAATCTGTAGATATCAAGAAGAACATCAGTGGCGAAGGCGAGTTCCCAGCCAAAAACTGACGCTGAGGTGCGAAAGCGTGGGTATCGAACAGGATTAGATACCCGAGTAGTC
+[lashlock@pbio381 filtered]$ extract_seqs_by_sample_id.py -i seqs.fna -o test -s 04-5-05
+[lashlock@pbio381 filtered]$ head test
+>04-5-05_109415 M02780:138:000000000-ATTB1:1:1101:17994:1235 1:N:0:TCCTGAGC+GTAAGGAG orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACAGGCGGCAGCAGTGGGGAATATTGCACAATGGGCGCAAGCCTGATGCAGCCATGCCGCGTGTGTGAAGAAGGCCTTCGGGTTGTAAAGCACTTTCAGTCAGGAGGAAAGGTTAGTAGTTAATACCTGCTAGCTATGACGTTACTGACAGAAGAAGCACCGGCTAGCTCCGTGCCAGCAGCCGCGGTAATACGGAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGTACGCGGGCGGTTTGTTAAGCGAGATGTGAAAGCCCCGGGCTCAACCTGGGAACTGCATTTCGAACTGGCAAACTAGAGTGTGATAGAGGGTGGTAGAATTTCAGGTGTAGCGGTGAAATGCGTAGAGATCTGAAGGAATTCCGATGGCGAAGGCAGCCACCCGGGTCAACACTGACGCTCATGTACGAAAGCGTGGGGAGCAAACGGGATTAGATACCCTGGTAGTC
+>04-5-05_109416 M02780:138:000000000-ATTB1:1:1101:11795:1279 1:N:0:TCCTGAGC+GTAAGGAG orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACGGGGGGCTGCAGTGGGGAATATTGCACAATGGGCGAAAGCCTGATGCAGCCATGCCGCGTGTGTGAAGAAGGCCTTCGGGTTGTAAAGCACTTTCAGCGAGGAGGAAAGGGATGTAGTTAATAACTGCATTCTGTGACGTTACTCGCAGAAGAAGCACCGGCTAACTTCGTGCCAGCAGCCGCGGTAATACGAGGGGTGCAAGCGTTAATCGGAATTACTGGGCGTAAAGCGTGCGTAGGTGGTTTGTTAAGCAAGATGTGAAAGCCCCGGGCTCAACCTGGGAACTGCATTTTGAACTGGCAGGCTAGAGTATTGTAGAGGGTAGTGGAATTTCCAGTGTAGCGGTGAAATGCGTAGAGATTGGAAGGAACATCAGTGGCGAAGGCGGCTACCTGGACAAATACTGACACTGAGGCACGAAAGCGTGGGGAGCAAACAGGATTAGATACCCGAGTAGTC
+>04-5-05_109417 M02780:138:000000000-ATTB1:1:1101:13929:1361 1:N:0:TCCTGAGC+GTAAGGAG orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACGGGGGGCTGCAGCTAAGAATCTTCCGCAATGGGCGAAAGCCTGACGGAGCGACACCGCGTGAGTGATGAAGGTCGAGAGGTTGTAAAACTCTTTTATTACCGAAGAATAAGTATTATGCGAAAGTATAATACGATGACATTAAGTGATGAATAAGCCCTGGCTAATTACGTGCCAGCAGCCGCGGTAATACGTAAGGGGCAAGCGTTGTTCGGAATCATTGGGCGTAAAGGGCGCGTAGGCGGATTAGAAGGCATTATGGTAAAGGTCATAGCTCAACTATGGTGTATTGTAATGAACCTCTAGTCTTGAGTTTTGGAGAGGGAACTGGAATTCTTGGTGTAAGGGTGAAATCTGTAGATATCAAGAAGAACATCAGTGGCGAAGGCGAGTTCCCAGCCAAAAACTGACACTGAGGTGCGAAAGCGTGGGTATCGAACAGGATTAGATACCCCTGTAGTC
+>04-5-05_109418 M02780:138:000000000-ATTB1:1:1101:17195:1363 1:N:0:TCCTGAGC+GTAAGGAG orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACGGGTGGCTGCAGTGGGGAATATTGCACAATAGGCGCAAGCCTGATGCAGCCATGCCGCGTGTGTGAAGAAGGCCTTCGGGTTGTAAAGCACTTTCAGTCAGGAGGAAAGGTTAGTAGTTAATACATGCTAGCTGTGACGTTACTGACAGAAGAAGCACCGGCTAACTCCGTGCCAGCAGCCGCGGTAATACGGAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGTACGCAGGCGGTTTGTTAAGCGAGATGTGAAAGCCCCGGGCTCAACCTGGGAACTGCATTTCGAACTGGCAAACTAGAGTGTGATAGAGGGTGGTAGAATTTCAGGTGTAGCGGTGAAATGCGTAGAGATCTGAAGGAATACCGATGGCGAAGGCAGCCACCTGGGTCAACACCGACGCTCATGTACGAAAGCGTGGGGAGCAAACGGGATTAGATACCCTTGTAGTC
+>04-5-05_109419 M02780:138:000000000-ATTB1:1:1101:8251:1394 1:N:0:TCCTGAGC+GTAAGGAG orig_bc=AAAAAAAAAAAA new_bc=AAAAAAAAAAAA bc_diffs=0
+CCTACGGGAGGCAGCAGTGGGGAATATTGCACAATGGGCGCAAGCCTGATGCAGCCATGCCGCGTGTGTGAAGAAGGCCTTCGGGTTGTAAAGCACTTTCAGTCAGGAGGAAAGGTTAGTAGTTAATACCTGCTAGCTGTGACGTTACTGACAGAAGAAGCACCGGCTAACTCCGTGCCAGCAGCCGCGGTAATACGGAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGTACGCAGGCGGTTTGTTAAGCGAGATGTGAAAGCCCCGGGCTCAACCTGGGAACTGCATTTCGAACTGGCGAACTAGAGTGTGGTAGAGGGTGGTAGAATTTCAGGTGTAGCGGTGAAATGCGTAGAGATCCGAAGGAATACCGATGGCGAAGGCAGCCACCTGGGTCAACACTGACGCTCATGTACGAAAGCGTGGGGAGCAAACAGGATTAGATACCCTTGTAGTC
+[lashlock@pbio381 filtered]$ rm test
+rm: remove regular file ‘test’? y
+[lashlock@pbio381 filtered]$
+[lashlock@pbio381 filtered]$ pick_open_reference_otus.py -i ~/16s_analysis/filtered/seqs.fna -o ~/16s_analysis/otus  --parallel --jobs_to_start 1
+^CTraceback (most recent call last):
+  File "/usr/bin/pick_open_reference_otus.py", line 453, in <module>
+    main()
+  File "/usr/bin/pick_open_reference_otus.py", line 432, in main
+    minimum_failure_threshold=minimum_failure_threshold)
+  File "/usr/lib/python2.7/site-packages/qiime/workflow/pick_open_reference_otus.py", line 713, in pick_subsampled_open_reference_otus
+    close_logger_on_success=False)
+  File "/usr/lib/python2.7/site-packages/qiime/workflow/util.py", line 114, in call_commands_serially
+    stdout, stderr, return_value = qiime_system_call(e[1])
+  File "/usr/lib/python2.7/site-packages/qcli/util.py", line 39, in qcli_system_call
+    stdout, stderr = proc.communicate()
+  File "/usr/lib64/python2.7/subprocess.py", line 800, in communicate
+    return self._communicate(input)
+  File "/usr/lib64/python2.7/subprocess.py", line 1401, in _communicate
+    stdout, stderr = self._communicate_with_poll(input)
+  File "/usr/lib64/python2.7/subprocess.py", line 1455, in _communicate_with_poll
+    ready = poller.poll()
+KeyboardInterrupt
+[lashlock@pbio381 filtered]$ cd ~/
+[lashlock@pbio381 ~]$ cd 16s_analysis/
+[lashlock@pbio381 16s_analysis]$ ll
+total 8
+drwxr-xr-x.  2 lashlock users 4096 Apr 10 11:08 filtered
+drwxr-xr-x. 26 lashlock users 4096 Apr 10 10:44 joined
+drwxr-xr-x.  3 lashlock users   64 Apr 10 11:13 otus
+drwxr-xr-x.  2 lashlock users   96 Apr 10 10:23 validate_map
+[lashlock@pbio381 16s_analysis]$ rm otus
+rm: cannot remove ‘otus’: Is a directory
+[lashlock@pbio381 16s_analysis]$ rm -r otus
+rm: descend into directory ‘otus’? y
+rm: remove regular file ‘otus/log_20170410111307.txt’? y
+y
+rm: descend into directory ‘otus/step1_otus’? rm: remove directory ‘otus/step1_otus/POTU_5Igq_’? y
+rm: remove directory ‘otus/step1_otus’? y
+rm: remove directory ‘otus’? y
+[lashlock@pbio381 16s_analysis]$
+[lashlock@pbio381 16s_analysis]$ biom summarize-table -i /data/project_data/16s/otu_table/otu_table_mc2_w_tax_no_pynast_failures.biom
+Num samples: 176
+Num observations: 93033
+Total count: 8362869
+Table density (fraction of non-zero values): 0.028
+
+Counts/sample summary:
+ Min: 28412.0
+ Max: 77866.0
+ Median: 47051.500
+ Mean: 47516.301
+ Std. dev.: 7637.541
+ Sample Metadata Categories: None provided
+ Observation Metadata Categories: taxonomy
+
+Counts/sample detail:
+24-5-11: 28412.0
+07-5-11: 31532.0
+04-5-08: 32477.0
+07-5-05: 32491.0
+38-6-09: 33391.0
+17-5-05: 34322.0
+27-5-14: 34735.0
+14-5-08: 35793.0
+26-5-05: 35813.0
+18-5-14: 35851.0
+06-5-11: 36919.0
+31-6-21: 37205.0
+38-6-12: 37260.0
+17-5-08: 37558.0
+03-5-11: 37765.0
+11-5-14: 38114.0
+13-5-14: 38211.0
+04-5-11: 38548.0
+37-6-09: 38624.0
+27-5-05: 38849.0
+17-5-17: 38850.0
+11-5-05: 38888.0
+05-5-11: 39128.0
+08-5-14: 39534.0
+12-5-08: 40033.0
+05-5-08: 40184.0
+21-5-14: 40241.0
+10-5-17: 40487.0
+07-5-08: 40554.0
+25-5-08: 40587.0
+16-5-14: 40620.0
+04-5-20: 40769.0
+06-5-14: 40967.0
+37-6-12: 40986.0
+18-5-08: 41298.0
+21-5-11: 41339.0
+13-5-05: 41346.0
+04-5-05: 41636.0
+02-5-08: 41735.0
+10-5-20: 41896.0
+13-5-08: 42039.0
+19-5-14: 42053.0
+11-5-08: 42101.0
+02-5-14: 42335.0
+23-5-14: 42337.0
+27-5-17: 42426.0
+22-5-14: 42493.0
+28-5-05: 42667.0
+21-5-08: 42790.0
+15-5-14: 42791.0
+03-5-08: 42813.0
+15-5-05: 42847.0
+29-5-08: 42962.0
+02-5-20: 43276.0
+17-5-14: 43278.0
+18-5-05: 43362.0
+33-6-09: 43419.0
+06-5-08: 43467.0
+26-5-08: 43747.0
+01-5-08: 43987.0
+09-5-17: 44133.0
+16-5-05: 44183.0
+29-5-05: 44289.0
+31-6-18: 44424.0
+15-5-08: 44509.0
+09-5-08: 44676.0
+12-5-05: 44776.0
+06-5-05: 44982.0
+04-5-14: 45114.0
+31-6-12: 45116.0
+28-5-08: 45136.0
+18-5-11: 45361.0
+32-6-12: 45623.0
+35-6-15: 45661.0
+19-5-17: 45695.0
+20-5-08: 45976.0
+11-5-11: 46033.0
+10-5-08: 46167.0
+10-5-05: 46198.0
+08-5-08: 46202.0
+37-6-18: 46255.0
+36-6-12: 46275.0
+20-5-05: 46401.0
+14-5-11: 46664.0
+35-6-18: 46912.0
+09-5-14: 46977.0
+19-5-20: 46991.0
+16-5-08: 47037.0
+02-5-17: 47066.0
+04-5-17: 47144.0
+34-6-21: 47231.0
+09-5-11: 47282.0
+17-5-11: 47458.0
+31-6-09: 47607.0
+31-6-15: 47689.0
+14-5-05: 47927.0
+13-5-11: 48302.0
+24-5-05: 48316.0
+32-6-15: 48497.0
+24-5-08: 48610.0
+24-5-17: 48621.0
+02-5-11: 48672.0
+29-5-11: 48707.0
+28-5-17: 48835.0
+23-5-17: 48846.0
+29-5-14: 48850.0
+01-5-11: 48877.0
+10-5-14: 48961.0
+15-5-11: 48992.0
+22-5-08: 49011.0
+21-5-05: 49041.0
+16-5-11: 49329.0
+23-5-20: 49451.0
+19-5-08: 49585.0
+35-6-21: 49623.0
+08-5-17: 49963.0
+32-6-09: 50068.0
+28-5-14: 50101.0
+09-5-20: 50105.0
+05-5-05: 50125.0
+21-5-17: 50382.0
+33-6-18: 50668.0
+08-5-20: 50698.0
+15-5-17: 51066.0
+20-5-14: 51176.0
+33-6-12: 51371.0
+32-6-21: 51411.0
+36-6-09: 51448.0
+23-5-05: 51558.0
+10-5-11: 51571.0
+34-6-18: 51990.0
+19-5-05: 52149.0
+33-6-15: 52401.0
+08-5-11: 52658.0
+35-6-12: 52791.0
+35-6-09: 52871.0
+25-5-05: 53423.0
+20-5-20: 53450.0
+23-5-08: 53456.0
+28-5-11: 53886.0
+26-5-11: 53925.0
+38-6-24: 53960.0
+20-5-11: 53978.0
+38-6-21: 54118.0
+32-6-18: 54151.0
+34-6-15: 54153.0
+37-6-15: 54388.0
+34-6-12: 54717.0
+02-5-05: 54850.0
+24-5-14: 54994.0
+36-6-15: 55095.0
+01-5-05: 55153.0
+38-6-15: 55242.0
+27-5-11: 55614.0
+08-5-05: 56383.0
+15-5-20: 56463.0
+20-5-17: 56497.0
+09-5-05: 56767.0
+35-6-24: 56984.0
+03-5-05: 57367.0
+34-6-09: 57813.0
+22-5-11: 57906.0
+27-5-20: 58225.0
+21-5-20: 58440.0
+24-5-20: 58825.0
+22-5-05: 58940.0
+27-5-08: 59017.0
+33-6-21: 60015.0
+34-6-24: 60708.0
+36-6-18: 61008.0
+31-6-24: 61401.0
+23-5-11: 63179.0
+38-6-18: 65199.0
+33-6-24: 68217.0
+32-6-24: 72091.0
+37-6-21: 77866.0
+[lashlock@pbio381 16s_analysis]$
+```
+
+Now we are going to look at the diversity of our samples this takes a long time so we will set a screen
+
+------
+<div id='id-section19'/>
+### Page 19:
+
+More microbiome stuff
+
+
+
+------
+<div id='id-section20'/>
+### Page 20:
+
+1. 1. Review of pipeline
+
+      1. Processing data
+         1. using fastq files and program Trimmomatic
+      2. Transcriptome assembly
+         1. fasta file using Trinity
+      3. Annotation
+         1. fasta file using BLAST
+      4. Map reads
+         1. sam files using BWA
+      5. Differential Gene Expression Analysis
+         1. Using counts tables and DESEQ2
+      6. Population Genomics
+         1. using vcf file analyzing with PCA, DAPC, and Admixture
+
+      We've done the DGE and popgen analyses, and now we want to know biological function...
+
+      - Functional Enrichment Analysis
+
+      Annotation Methods
+
+      - Blast2GO
+        - paid
+      - Brute force
+        - blast and annotate yourself
+      - Pipelines
+        - Trinotate
+
+      Generic pipeline
+
+      1. .fasta file with genes
+      2. use existing databases to find out what these genes are
+         1. Using BLAST
+            1. Using thresholds (e value cutoff)
+         2. Diamond
+      3. Blast output
+         1. e value (smaller better)
+         2. bit score (bigger better)
+         3. % identity
+         4. length
+
+   ​
+
+Databases
+
+- NCBI NR
+  - non redundant protein database
+- UniProt
+  - proteins and their associated terms
+
+------
+<div id='id-section21'/>
+### Page 21:
+
+Info update: Rarefying microbiome data is not acceptable
+
+Rarefying vs Rarefaction
+
+Past methods
+
+- Proportions of OTUs
+  - high rate of false positives
+  - does not account for heteroscedasticity
+- Rarefying
+  - Steps:
+    - Find your smallest N reads
+    - Discard libraries with fewer than N reads
+    - Subsample OTUs with larger than N without replacement
+  - What this does:
+    - this normalizes the data
+    - Removes large discrepancies in the number of reads
+  - Problems with rarefying:
+    - high rate of false positives
+    - requires omission of data
+    - reduces statistical power
+- Mixture model
+  - employing a statistical distribution that includes multiple types of distributions in analysis
+  - Not eliminating as much data
+  - increase in accuracy
+  - distributions: binomial with0-inflated gaussian 
+  - accounts for biological variability
+  - can use edgeR and DESEQ and phyloseq to emply mixture models 
+
+Working with picrust
+
+1. Make a filtered OTU table with only closed OTUs found in your sample
+
+```
+filter_otus_from_otu_table.py -i ~/16s_analysis/otu_table_mc2_w_tax_no_pynast_failures_no_chimeras_frequency_filtered.biom -o ~/16s_analysis/closed_otu_table.biom --negate_ids_to_exclude -e /usr/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta 
+```
+
+2. How many OTUs do we have?
+
+```
+Num samples: 176
+Num observations: 259
+Total count: 1493357
+Table density (fraction of non-zero values): 0.546
+
+Counts/sample summary:
+ Min: 152.0
+ Max: 32426.0
+ Median: 6333.500
+ Mean: 8484.983
+ Std. dev.: 6937.648
+ Sample Metadata Categories: None provided
+ Observation Metadata Categories: taxonomy
 
 ```
 
-------------
+3. Normalize by copy number of the 16s gene
+
+```
+normalize_by_copy_number.py -i ~/16s_analysis/closed_otu_table.biom -o ~/16s_analysis/closed_otu_table_norm.biom
+```
+
+4. Predicting metagenomes
+   1. output text file
+
+```
+predict_metagenomes.py -f -i ~/16s_analysis/closed_otu_table_norm.biom -o ~/16s_analysis/metagenome_predictions.txt -a nsti_per_sample.txt 
+```
+
+	2. output biom file
+
+```
+predict_metagenomes.py -i ~/16s_analysis/closed_otu_table_norm.biom -o ~/16s_analysis/metagenome_predictions.biom -a nsti_per_sample.txt
+```
+
+5. Count the rows in your .txt file to see how many KEGG Orthology terms that were predicted
+
+```
+wc -l metagenome_predictions.txt
+```
+
+6910 metagenome_predictions.txt
+
+6. Collapse your results to a higher KO heirarchy term
+
+```
+categorize_by_function.py -f -i metagenome_predictions.biom -c KEGG_Pathways -l 3 -o metagenome_predictions.L3.txt
+```
+
+7. Do this for the biom file as well
+
+```
+categorize_by_function.py -i metagenome_predictions.biom -c KEGG_Pathways -l 3 -o metagenome_predictions.L3.biom
+```
+
+8. You can run the summarize command again to get an idea of how many terms you have left and then  move the biom file to your computer and run analyses in R
+
+```
+library("phyloseq"); packageVersion("phyloseq")
+library("DESeq2")
+packageVersion("DESeq2")
+library("ggplot2")
+theme_set(theme_bw())
+library('biom')
+
+x = read_biom("metagenome_predictions.L3.biom")
+otumat = as(biom_data(x), "matrix")
+OTU = otu_table(otumat, taxa_are_rows=TRUE)
+
+
+mapping <- import_qiime_sample_data(mapfilename = 'R_map.txt')
+
+phylo <- merge_phyloseq(OTU, mapping)
+phylo
+
+###############################################################################
+###Test for DE KO terms between individuals that got sick and those that didn't
+###############################################################################
+
+final_pheno = phyloseq_to_deseq2(phylo, ~ Final_phenotype)
+final_pheno_results = DESeq(final_pheno, test="Wald")
+final_pheno_res = results(final_pheno_results)
+summary(final_pheno_res)
+head(final_pheno_res)
+
+alpha = 0.05
+final_pheno_sigtab = final_pheno_res[which(final_pheno_res$padj < alpha), ]
+final_pheno_sigtab= cbind(as(final_pheno_sigtab, "data.frame"), as(tax_table(phylo)[rownames(final_pheno_sigtab), ], "matrix"))
+head(final_pheno_sigtab)
+final_pheno_sigtab
+write.table(final_pheno_sigtab, "Final_pheno_L3.txt", sep="\t")
+```
+
+
+
+------
+<div id='id-section22'/>
+### Page 22:
+
+Final Project R Script
+
+
+
+```
+
+#FinalProj Script
+
+#load in libraries
+
+library("phyloseq")
+library("DESeq2")
+library(XML)
+library("ggplot2")
+theme_set(theme_bw())
+
+#Import the OTU table
+otutable <- import_biom(BIOMfilename = 'otu_table_mc2_w_tax_no_pynast_failures_no_chimeras_frequency_filtered.biom', 
+                        treefilename = 'rep_set_no_chimeras.tre', 
+                        parseFunction = parse_taxonomy_greengenes)
+
+#The warnings are ok. There is 1 warning for every OTU that doesn't have a taxonomy assignment
+
+#Import the mapping file
+mapping <- import_qiime_sample_data(mapfilename = 'R_map.txt')
+
+#Merge the mapping file to the OTU table
+
+phylo <- merge_phyloseq(otutable, mapping)
+
+
+#Check to make sure the imports worked
+phylo
+
+head(otu_table(phylo))
+
+tail(otu_table(phylo))
+
+phylo_subset = subset_samples(phylo, Day == 3 & Phenotype !="Dead")
+phylo_int = subset_samples(phylo, Day==3 & Tide=="intertidal")
+phylo_int
+phylo_sub = subset_samples(phylo, Day==3 & Tide=="subtidal")
+phylo_sub
+phylo_subset
+sample_data(phylo_subset)
+sample_data(phylo_int)
+sample_data(phylo_sub)
+
+##We want to numbers of each individual to be a factor. Right now it's an integer so we have to change that.
+class(sample_data(phylo_subset)$individual)
+sample_data(phylo_subset)$individual<-factor(sample_data(phylo_subset)$individual)
+
+##Phyloseq's wrapper to get OTU data into DESeq
+
+loc <- phyloseq_to_deseq2(phylo_subset, ~  Tide)
+names(loc)
+
+##Run DESeq. This command takes a bit of time
+
+loc_deseq_test <- DESeq(loc, test="Wald")
+
+str(loc_deseq_test)
+##Get results from DESeq
+
+loc_results <- results(loc_deseq_test)
+
+##Have a look at the summary
+summary(loc_results)
+head(loc_results)
+
+
+#Subtidal is the reference
+# out of 1063 with nonzero total read count
+# adjusted p-value < 0.1
+# LFC > 0 (up)     : 73, 6.9% 
+# LFC < 0 (down)   : 52, 4.9% 
+# outliers [1]     : 0, 0% 
+# low counts [2]   : 248, 23% 
+
+
+##Make table with OTUs padj<0.05
+alpha <- 0.05
+
+loc_sigtab <- loc_results[which(loc_results$padj < alpha), ]
+
+loc_sigtab
+
+##Add taxa info to that table
+
+loc_sigtab <- cbind(as(loc_sigtab, "data.frame"), as(tax_table(phylo)[rownames(loc_sigtab), ], "matrix"))
+tail(loc_sigtab)
+
+#sort by padj
+loc_sigtab <- loc_sigtab[order(resLoc$padj),1:12]
+head(loc_sigtab)
+
+loc_sigtab <- loc_sigtab[1:6, 1:12]
+loc_sigtab
+
+##Save the table to your desktop
+
+write.table(loc_sigtab, "DE_OTU_intertidal_vs_subtidal.txt", sep="\t")
+
+###Diversity analyses
+
+richness.df <- estimate_richness(phylo_subset, split=TRUE, measures=NULL)
+
+str(richness.df)
+richness.df
+#make two separate data frames to run richness analyses separately, add on a column denoting tide and then merge back together
+
+int_rich.df <- estimate_richness(phylo_int, split=TRUE, measures=NULL)
+int_rich.df$Tide <-as.factor("Intertidal")
+str(int_rich.df)
+int_rich.df
+
+sub_rich.df <- estimate_richness(phylo_sub, split=TRUE, measures=NULL)
+sub_rich.df$Tide <-as.factor("Subtidal")
+str(sub_rich.df)
+sub_rich.df
+
+richByTide.df <- rbind(int_rich.df, sub_rich.df)
+
+richByTide.df
+
+#removing standard error columns
+
+richByTide.df$se.chao1 <- NULL
+
+richByTide.df$se.ACE <- NULL
+
+richByTide.df
+
+# t1<-apply(richByTide.df[,-8],2, function(x){t.test(x~richByTide.df$Tide)$p.value})
+# t2<-apply(richByTide.df[,-8],2, function(x){t.test(x~richByTide.df$Tide)$estimate})
+# t3<-apply(richByTide.df[,-8],2, function(x){t.test(x~richByTide.df$Tide)$conf.int[1:2]})
+# #t1<-t.test(Fisher~Tide,data=richByTide.df)$p.value
+# #t2<-t.test(Fisher~Tide,data=richByTide.df)$estimate
+# #t3<-t.test(Fisher~Tide,data=richByTide.df)$conf.int[1:2]
+# 
+# data.frame(cbind(Pvalue=t1,Estimate=t2,ConfidenceInterval=t3))
+# data.frame(cbind(t1,t2,t3))
+
+
+t1<-apply(richByTide.df[,-8],2, function(x){t.test(x~richByTide.df$Tide)$p.value})
+t2<-apply(richByTide.df[,-8],2, function(x){t.test(x~richByTide.df$Tide)$estimate})
+t3<-apply(richByTide.df[,-8],2, function(x){t.test(x~richByTide.df$Tide)$conf.int[1:2]})
+
+str(t1)
+t2
+t3
+t1 <- as.data.frame(t1)
+t1
+
+t1 <- t(as.data.frame(t1))
+t2 <- t(as.data.frame(t2))
+t3 <- t(as.data.frame(t3))
+
+t1
+t2
+t3
+
+SummTable <- rbind(t1,t2,t3)
+
+SummTable
+
+row.names(SummTable) <- c("pvalue", "Mean in Intertidal", "Mean in Subtidal", "LCI", "UCI")
+
+SummTable
+
+write.table(SummTable, "RichnessSummary.txt", sep="\t")
+
+########################################################
+
+##Plot abundances of taxa in different pheno numbers
+##First we must rarefy
+set.seed(28132)
+phyloR = rarefy_even_depth(phylo_subset, sample.size = min(sample_sums(phylo_subset)))
+
+#Then we check to make sure we rarefied corectly.
+title = "Sum of reads for each sample, phyloR"
+plot(sort(sample_sums(phyloR), TRUE), type = "h", main = title, ylab = "reads", 
+     ylim = c(0, 20000))
+
+
+##We merge on basis of pheno number so we can make relative abundance graph
+#phyloRm = merge_samples(phyloR, "Pheno_num")
+
+##Merge on basis of phenotype
+phyloRmD = merge_samples(phyloR, "Tide")
+
+phyloRmD
+
+phyloRt = transform_sample_counts(phyloRmD, function(x) 100 * x/sum(x))
+
+
+p = plot_bar(phyloRt,x="Tide",facet_grid=NULL, fill="Order")
+p + geom_bar(aes(color=Order, fill=Order), stat="identity", position="stack")
+
+###################DGE Analysis###################
+
+countsTable <- read.delim('countsdata_trim2.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
+countData <- as.matrix(countsTable)
+head(countData)
+
+
+conds <- read.delim("cols_data_trim.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
+head(conds)
+colData <- as.data.frame(conds)
+colData
+
+colDay3 <- subset(colData, day=="day03")
+
+colDay3
+# colInt<-subset(colDay3,location=="int")
+# colSub <- subset(colDay3, location=="sub")
+# 
+# colInt
+# colSub
+# 
+# countDataInt<-countData[, which(colnames(countData) %in% row.names(colInt))]
+# countDataSub<-countData[, which(colnames(countData) %in% row.names(colSub))]
+# dim(countDataInt)
+# dim(countDataSub)
+
+countDataDay3<-countData[, which(colnames(countData) %in% row.names(colDay3))]
+head(countDataDay3)
+
+
+ddsLoc<- DESeqDataSetFromMatrix(countData = countDataDay3, colData = colDay3 ,design = ~ location)
+
+ddsLoc
+
+ddsLoc <- ddsLoc[ rowSums(counts(ddsLoc)) > 100, ]
+
+colData(ddsLoc)$location <- factor(colData(ddsLoc)$location, levels=c("int","sub"))
+
+colData(ddsLoc)
+
+ddsLoc <- DESeq(ddsLoc) 
+
+names(ddsLoc)
+str(ddsLoc)
+
+resLoc <- results(ddsLoc)
+resLoc
+
+
+
+#sort results by padj
+resLoc <- resLoc[order(resLoc$padj),]
+
+head(resLoc)
+
+summary(resLoc)
+
+## Merge with normalized count data
+resSumm <- merge(as.data.frame(resLoc), as.data.frame(counts(ddsLoc, normalized=TRUE)), by="row.names", sort=FALSE)
+names(resSumm)[1] <- "Gene"
+resSumm <- head(resSumm)
+resSumm
+
+row.names(resSumm) <- c("DN41041_c3_g2", "DN47102_c1_g1", "DN19042_c0_g1", "DN39048_c5_g1", "DN39233_c0_g1", "DN39328_c5_g1")
+
+resSumm <- resSumm[,2:7]
+
+resSumm
+
+## Write results
+write.csv(resSumm, file="diffexpr-results.csv")
+
+plotCounts(ddsLoc, gene="TRINITY_DN39328_c5_g1_TRINITY_DN39328_c5_g1_i1_g.8543_m.8543", intgroup="location")
+
+vsdata <- vst(ddsLoc, blind=FALSE)
+
+plotPCA(vsdata, intgroup="location")
+
+#plot counts for top 6 genes
+
+normcounts<-data.frame(genes=rownames(counts(ddsLoc, normalized=TRUE)),counts(ddsLoc, normalized=TRUE))
+head(normcounts)
+
+#names.to.keep <- as.factor(c("TRINITY_DN41041_c3_g2_TRINITY_DN41041_c3_g2_i1_g.10613_m.10613", "TRINITY_DN47102_c1_g1_TRINITY_DN47102_c1_g1_i3_g.24581_m.24581", "TRINITY_DN19042_c0_g1_TRINITY_DN19042_c0_g1_i1_g.1710_m.1710", "TRINITY_DN39048_c5_g1_TRINITY_DN39048_c5_g1_i1_g.8316_m.8316", "TRINITY_DN39233_c0_g1_TRINITY_DN39233_c0_g1_i1_g.8447_m.8447 ", "TRINITY_DN39328_c5_g1_TRINITY_DN39328_c5_g1_i1_g.8543_m.8543"))
+#length(names.to.keep)
+#rows.to.keep<-which(rownames(normcounts) %in% names.to.keep) 
+normcounts2 <- normcounts[normcounts$genes %in% as.factor(rownames(head(resLoc))),]
+
+normcounts2$genes <- c("DN41041_c3_g2", "DN47102_c1_g1", "DN19042_c0_g1", "DN39048_c5_g1", "DN39233_c0_g1", "DN39328_c5_g1")
+dim(normcounts2)
+str(normcounts2)
+normcounts2
+
+install.packages("tidyr")
+
+library(tidyr)
+
+countsDF <- gather(normcounts2,individuals,normcounts,I03_5.08_S_2:I38_6.12_H_0)
+dim(countsDF)
+head(countsDF)
+
+summary(countsDF)
+
+head(conds)
+conds$individuals <- as.factor(rownames(conds))
+str(conds)
+library(dplyr)
+
+topHits <- inner_join(countsDF,conds,by="individuals")
+topHits
+dim(topHits)
+str(topHits)
+
+ggplot(topHits, aes(x=location,y=log(normcounts+1), color=location))+
+  geom_boxplot()+facet_grid(.~genes)+theme(legend.position="none")
+
+#####################Annotation of topHits#############################
+#Blastx results
+#>TRINITY_DN41041_c3_g2_TRINITY_DN41041_c3_g2_i1_g.10613_m.10613 type:5prime_partial len:413 TRINITY_DN41041_c3_g2_i1:2720-1482(-)
+#CCTAATGAGGTGCTTGTGCGCATGGACCCAAGTGTTAAGCAGCCCAAGTGTGTCAAGAAAGAGTTTCCTCCATGCGTTTACAGAGATCGGGCCTGTCCCAATTATCGAGTTGTGGACACATTGACGGATAACATTGAGCATCGTCAGTTAGCTGCTAGCCATTACGTCATGAAGAGGACTCGAACCTGTAACATGAGCCAGGCATACGATGATGCATATATGCCACTTTACAATTACCTCAAAGGAGCAAACAGCGAGTCTGTGACTATGAGCCCTACAGCTCCGGACATGATCCTGGTCCACAAATCAACAGACAACCCACCCGAGGGGTGTGACTTTGCTTACAGTCTGTTGTTTTACCTTCCCGTTGACAGACAGCTCAGTGCCCCAGCACCGACTGAGGATGGTGTTGAACTCATCAAGCAAGAAGCCAAGGAAGCGTTTGTCATTACCTTCACAGATTCAACAACGGACCGAGTACTTGCAGCCAAGGAGACCGAGCTACACAATGAACTGGACAAACGTGAACTCTGTTATAGCACCGATGAATTCTTCTTTGCAAGCTATGATGCATCGTGGAGACCAGAGCCCCATCGCAAAGAGATTTGGATCCCAGAAGCAATGTGCACTACACCAAGTGTCCAAGGTCCTGGTTACACCATCCTGGACAATGGATGTGGGGAAGAGGTCAACTGTCCATCTTATCAGAAGGGTCAATCCCACGGGACATTCGAGGAGAGGAACTACGAGGAGAGCATGTGGATTTGTAAGACGACCGTGAGCTGTAATGTTGAGCAGGCCTTCAGTCAGTCCATCCTGCCGCTGTACCAGTATTTCACCAGCAGCTATGACATCCAACCTGTAGCCAGACCTATCATTTCCTATATGAGAATTGCCGACTTACTGAGCACGGAGTGCAACAAGGAGATTAAGACCTGTGCCTACCTACCAGAAACTGCTTTCAGACTGCCCCTGTTGACCCCACCTAGTCAATTGACATTGCTGAGCGTTCCCAGTGATGACCATCCATGGCAGGCAGCTTATGTAACCGCCCTCCAAGGTCCACCGACAGTCACCAACATCCAGTCAAGTATTACAACACTGCTGCAACAGATCATGGATGCAGACTTGTTCCACAGTGGCCGTGTGTTTGTGGCTCGTTACACCCTTCCGATGGAGGATGGACAGCAATACATTGAAGTCGGAGCTCTGACTGACACTATATCTTATGACGTCTAA
+#Can promote mitochondrial permeability transition and facilitate necrotic cell death under different types of stress conditions
+#Heme binding protein 2
+#human protein
+
+#"Induction of necrotic cell death and mitochondrial permeabilization by heme binding protein 2/SOUL."
+#Szigeti A., Bellyei S., Gasz B., Boronkai A., Hocsak E., Minik O., Bognar Z., Varbiro G., Sumegi B., Gallyas F. Jr.
+#FEBS Lett. 580:6447-6454(2006) [PubMed] [Europe PMC] [Abstract]
+
+#>TRINITY_DN47102_c1_g1_TRINITY_DN47102_c1_g1_i3_g.24581_m.24581 type:5prime_partial len:127 TRINITY_DN47102_c1_g1_i3:420-40(-)
+#GATCGATGTGCACCATCTTCGTACCGGAAATGGCCTGCAGGCCGGGACACTCAGAATGCCACTCAAAAGCATCTTCAGCGGGATTTTTGTACACAGAGCTGCAAAAAAGAAAAAAGAAGAAGAAACGAAATAAAATACAAGGAGGGTCAAATCACACCCATAACAACATCGGATTTGCACAAGTTTTCCACCACTGGAAAGCCACGATTCAGGGCTCTCACCTCGTTGTGGATCCGTGTCTCTGACCATTTTCTAGGCGGGGCGAGCGGCCCCGGAATAGGGCTACAACCACCGGCAAATTTGCCCACGCGCCGGGGCCGAGCAACAACAAAGGCAAGACATGTCCATCCGAAGAATGATTTGAAACAACACCCGGGCTAA
+#No significant similarity found
+
+#>TRINITY_DN19042_c0_g1_TRINITY_DN19042_c0_g1_i1_g.1710_m.1710 type:internal len:168 TRINITY_DN19042_c0_g1_i1:2-502(+)
+#TACACTATGGTTGATGCGGTAGCTAAACACTCCTTCAAAGCAACTAGCGAAGATGAGCTGTCCTTCGAGAAAGGAGATACAATCGTTGTTAACGTTTTAGAGAACTCGGAGCAGCACTGGTACAAAGCCTCTTTGAACGGCAAAAAAGGATTAGTCCCAGCAAACTACATTGAAATAAAACCTTACCCTTTCTTACATGGAAACATCTCAAGAGACGGCGCTGTTTGGAAGCTTAACGACCAGCCAGACGGAGCTTTCCTTATCCGTAGAAGTGAGAGTGACATCAGCGAAATCAGTTACTCACTGTCTGTCAAGTACGGTGATGGAGTACAGCACTTCAAGATCTTAACAGATGGCAGCTACAAATACTTCCTGTGGGTAGTGAAGTTTAGATCGCTAAATGAACTGGTGGAATACTACAAGACGTCCTCTGTTAGCCGGACACAAACAATTTTATTGAAGGATATGGAAGTGGAGCACGAAGTAGCGGTGGCAGAATTT
+#Adapter protein that provides a critical link between cell surface growth factor receptors and the Ras signaling pathway.
+#Isoform 2 does not bind to phosphorylated epidermal growth factor receptor (EGFR) but inhibits EGF-induced transactivation of a RAS-responsive element. Isoform 2 acts 
+#as a dominant negative protein over GRB2 and by suppressing proliferative signals, may trigger active programmed cell death.
+#Associate with host-virus interaction
+#human protein
+
+
+#>TRINITY_DN39048_c5_g1_TRINITY_DN39048_c5_g1_i1_g.8316_m.8316 type:5prime_partial len:107 TRINITY_DN39048_c5_g1_i1:361-41(-)
+#TTTCGAGGGCCGGCGGGAGCTCGCCGGACGCCGCCGGAGACGCGGCGCTCTACGGGGCCGCAGCCCCTAGCTCCGGACAAGCCGATTCCAGGGACCCCGCCCCTTACCAAGAAAAGAAAACTCTTCCCGGGGCCCCGGCCGGCGTCTGCGGGCTCGCTCGCTTTACAGCTCGGACCGCCACGAAGACGGAGGGCTCCGCCTCCGGGTTCGGGAATATTGACCCGATTCCCTTTCGCCCGGGGAGCGAGGCCCCCGCTCACATGGAGAGGGGCGCCCGCCGCCGCTCGGAGCGGAACTTCCCTGGGGCTTAGGATCTACTGA
+#No Blastx results
+#Blast Asterias forbesii sea star 5.8S rRNA gene
+
+#>TRINITY_DN39233_c0_g1_TRINITY_DN39233_c0_g1_i1_g.8447_m.8447 type:internal len:150 TRINITY_DN39233_c0_g1_i1:2-448(+)
+#GGACGCGACGGATCAACTGGTTCTCCTGGTAATAAGGGATTCTCTGGTGATGTTGGACGAATTGGAATCCCAGGACTTCCTGGAGCCCCAGGTGACCGTGGTGGTGTGGGACAATCAGGTATTTCTGGAGCACCTGGTGCCCAAGGTTCATCAGGCAAGCGAGGAATTTCTGGAAAAGCCGGATCTAGAGGATCTCCAGGTCCACAAGGACCAGCTGGGTCTACAGGTCTGAGCGGTGAGCCGGGTGATATTGGAAGATCAGGAAGGACTGGTCCCCCTGGACCTAAAGGAAACCCGGGAGAGAGAGGAGGCTCTGGTCAACGAGGAGCTCAGGGTATTCCAGGAGGACAGGGACTAGCAGGAGGTGCCGGAGCCCGTGGGGAGAAGGGACCAAAAGGCTCCATCGGTGAGGCTGGAGTCCAGGGTGGCTCTGGCCCAACTGGACGA
+#Human
+#Collagen alpha-1(XI) chain
+#May play an important role in fibrillogenesis by controlling lateral growth of collagen II fibrils.
+
+
+
+#>TRINITY_DN39328_c5_g1_TRINITY_DN39328_c5_g1_i1_g.8543_m.8543 type:internal len:103 TRINITY_DN39328_c5_g1_i1:3-308(+)
+#TCCTCGAGGACCGAGTGGCGGAGAAGGGTTCCATGTGAACAGCAGTTGTACATGGGTCAGTCGATCCTAAGCCCCAGGGAAGTTCCGCTCCGAGCGGAGGCGGGCGCCCCTCTCCATGTGAGCGGGGGCCTCGCTCCCCGGGCGAAAGGGAATCGGGTCAATATTCCCGAACCCGGAGGCGGAGCCCTCCGTCTTCGTGGCGGTCCGAGCTGTAAAGCGAGCGAGCCCGCAGACGCCGGCCGGGGCCCCGGGAAGAGTTTTCTTCTCTTGGTAAGGGGCGGGATCCCTGGAATCGGCGTGTCCGGA
+#BlastX results: uncharacterized protein
+#blast results 5.8s rRNA
+
+
+##################Plotcounts for DGE####################
+
+
+par(mfrow=c(2,3))
+
+plotCounts(ddsLoc, gene="TRINITY_DN41041_c3_g2_TRINITY_DN41041_c3_g2_i1_g.10613_m.10613", intgroup="location")
+plotCounts(ddsLoc, gene="TRINITY_DN47102_c1_g1_TRINITY_DN47102_c1_g1_i3_g.24581_m.24581", intgroup="location")
+plotCounts(ddsLoc, gene="TRINITY_DN19042_c0_g1_TRINITY_DN19042_c0_g1_i1_g.1710_m.1710", intgroup="location")
+plotCounts(ddsLoc, gene="TRINITY_DN39048_c5_g1_TRINITY_DN39048_c5_g1_i1_g.8316_m.8316", intgroup="location")
+plotCounts(ddsLoc, gene="TRINITY_DN39233_c0_g1_TRINITY_DN39233_c0_g1_i1_g.8447_m.8447", intgroup="location")
+plotCounts(ddsLoc, gene="TRINITY_DN39328_c5_g1_TRINITY_DN39328_c5_g1_i1_g.8543_m.8543", intgroup="location")
+```
+
+
+
+
+
+------
+<div id='id-section23'/>
+### Page 23:
+------
+<div id='id-section24'/>
+### Page 24:
+------
+<div id='id-section25'/>
+### Page 25:
+------
+<div id='id-section26'/>
+### Page 26:
+------
+<div id='id-section27'/>
+### Page 27:
+------
+<div id='id-section28'/>
+### Page 28:
+------
+<div id='id-section29'/>
+### Page 29:
+------
+<div id='id-section30'/>
+### Page 30:
+------
+<div id='id-section31'/>
+### Page 31:
+------
+<div id='id-section32'/>
+### Page 32:
+------
+<div id='id-section33'/>
+### Page 33:
+------
+<div id='id-section34'/>
+### Page 34:
+------
+<div id='id-section35'/>
+### Page 35:
+------
+<div id='id-section36'/>
+### Page 36:
+------
+<div id='id-section37'/>
+### Page 37:
+------
+<div id='id-section38'/>
+### Page 38:
+------
+<div id='id-section39'/>
+### Page 39:
+------
+<div id='id-section40'/>
+### Page 40:
+------
+<div id='id-section41'/>
+### Page 41:
+------
+<div id='id-section42'/>
+### Page 42:
+------
+<div id='id-section43'/>
+### Page 43:
+------
+<div id='id-section44'/>
+### Page 44:
+------
+<div id='id-section45'/>
+### Page 45:
+------
+<div id='id-section46'/>
+### Page 46:
+------
+<div id='id-section47'/>
+### Page 47:
+------
+<div id='id-section48'/>
+### Page 48:
+------
+<div id='id-section49'/>
+### Page 49:
+------
+<div id='id-section50'/>
+### Page 50:
+------
+<div id='id-section51'/>
+### Page 51:
+------
+<div id='id-section52'/>
+### Page 52:
+------
+<div id='id-section53'/>
+### Page 53:
+------
+<div id='id-section54'/>
+### Page 54:
+------
+<div id='id-section55'/>
+### Page 55:
+------
+<div id='id-section56'/>
+### Page 56:
+------
+<div id='id-section57'/>
+### Page 57:
+------
+<div id='id-section58'/>
+### Page 58:
+------
+<div id='id-section59'/>
+### Page 59:
+------
+<div id='id-section60'/>
+### Page 60:
+
+------
+
+
+
 

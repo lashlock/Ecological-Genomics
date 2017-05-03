@@ -7,10 +7,16 @@ countsTable <- read.delim('countsdata_trim2.txt', header=TRUE, stringsAsFactors=
 countData <- as.matrix(countsTable)
 head(countData)
 
+
+
 conds <- read.delim("cols_data_trim.txt", header=TRUE, stringsAsFactors=TRUE, row.names=1)
 head(conds)
 colData <- as.data.frame(conds)
 head(colData)
+
+
+
+
 
 
 #################### MODEL NUMBER 1: TEST EFFECT OF HEALTH CONTROLLING FOR LOCATION
