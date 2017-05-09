@@ -2696,6 +2696,60 @@ Now we are going to look at the diversity of our samples this takes a long time 
 
 More microbiome stuff
 
+- Filter chimeric sequences
+  - first step is to make a fasta file with the chimeric sequences in our data
+
+```
+vsearch --uchime_ref /data/project_data/16s/otu_table/rep_set.fna --chimeras ~/16s_analysis/mc2_w_tax_no_pynast_failures_chimeras.fasta --db /usr/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta
+
+```
+
+- Remove chimeras from OTU table
+  - we will use the python script below to do this
+
+```
+filter_otus_from_otu_table.py -i /data/project_data/16s/otu_table/otu_table_mc2_w_tax_no_pynast_failures.biom -o otu_table_mc2_w_tax_no_pynast_failures_no_chimeras.biom -e ~/16s_analysis/mc2_w_tax_no_pynast_failures_chimeras.fasta
+
+```
+
+- Actually removing files now
+
+```
+filter_fasta.py -f /data/project_data/16s/otu_table/pynast_aligned_seqs/rep_set_aligned_pfiltered.fasta -o ~/16s_analysis/rep_set_aligned_pfiltered_no_chimeras.fasta -a ~/16s_analysis/mc2_w_tax_no_pynast_failures_chimeras.fasta -n
+
+```
+
+
+
+- Set screen and make remake phylogenetic tree without chimeric sequences
+
+```
+screen 
+make_phylogeny.py -i ~/16s_analysis/rep_set_aligned_pfiltered_no_chimeras.fasta -o ~/16s_analysis/rep_set_no_chimeras.tre
+```
+
+Now we will frequency filter our data to get rid of OTUs with a min count of 50 and a min sample of 44
+
+```
+filter_otus_from_otu_table.py -i otu_table_mc2_w_tax_no_pynast_failures_no_chimeras.biom -o otu_table_mc2_w_tax_no_pynast_failures_no_chimeras_frequency_filtered.biom --min_count 50 --min_samples 44
+
+```
+
+We now have only 1064 OTUs left
+
+
+
+Diversity analysis in Qiime (Melanie ran this for us)
+
+```
+core_diversity_analyses.py -o core_diversity_filtered -i otu_table_mc2_w_tax_no_pynast_failures_no_chimeras_frequency_filtered.biom -m ~/Po/MiSeq/joined/map.txt -t rep_set_no_chimeras.tre -e 20000 -a 8
+
+```
+
+Notes from phyloseq analysis in R script
+
+
+
 ------
 <div id='id-section21'/>
 ### Page 21:
@@ -2751,12 +2805,11 @@ Databases
   - proteins and their associated terms
 
 
-
 ------
 <div id='id-section22'/>
 ### Page 22:
 
-
+Notes from Phyloseq analysis in R script
 
 
 
