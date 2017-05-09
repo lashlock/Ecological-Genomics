@@ -84,6 +84,24 @@ loc_sigtab
 
 loc_sigtab <- cbind(as(loc_sigtab, "data.frame"), as(tax_table(phylo)[rownames(loc_sigtab), ], "matrix"))
 tail(loc_sigtab)
+loc_sigtab
+
+##Lets look at the things that look different
+
+sphingomonadales <- subset(loc_sigtab, Order=="Sphingomonadales")
+sphingomonadales
+
+oceanospirillales <- subset(loc_sigtab, Order=="Oceanospirillales")
+oceanospirillales
+
+vibrionales <- subset(loc_sigtab, Order=="Vibrionales")
+vibrionales
+
+
+pseudomonadales <- subset(loc_sigtab, Order=="Pseudomonadales")
+pseudomonadales
+
+
 
 #sort by padj
 loc_sigtab <- loc_sigtab[order(resLoc$padj),1:12]
@@ -192,6 +210,11 @@ phyloRt = transform_sample_counts(phyloRmD, function(x) 100 * x/sum(x))
 p = plot_bar(phyloRt,x="Tide",facet_grid=NULL, fill="Order")
 p + geom_bar(aes(color=Order, fill=Order), stat="identity", position="stack")
 
+########Potential Ordination Plot#########
+
+
+
+
 ###################DGE Analysis###################
 
 countsTable <- read.delim('countsdata_trim2.txt', header=TRUE, stringsAsFactors=TRUE, row.names=1)
@@ -220,7 +243,7 @@ colDay3
 
 countDataDay3<-countData[, which(colnames(countData) %in% row.names(colDay3))]
 head(countDataDay3)
-
+dim(countDataDay3)
 
 ddsLoc<- DESeqDataSetFromMatrix(countData = countDataDay3, colData = colDay3 ,design = ~ location)
 
@@ -248,6 +271,8 @@ resLoc <- resLoc[order(resLoc$padj),]
 head(resLoc)
 
 summary(resLoc)
+
+
 
 ## Merge with normalized count data
 resSumm <- merge(as.data.frame(resLoc), as.data.frame(counts(ddsLoc, normalized=TRUE)), by="row.names", sort=FALSE)

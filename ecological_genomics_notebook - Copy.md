@@ -15,9 +15,9 @@ Notes from class material,and class project will populate this notebook.
 ### Table of contents for 60 entries (Format is *Page: Date(with year-month-day). Title*)        
 * [Page 1: 2017-02-01](#id-section1). Sequencing strategies applied to biological questions
 * [Page 2: 2017-02-06](#id-section2).  RNAseq   
-* [Page 3: 2017-02-08](#id-section3). 
-* [Page 4: 2017-02-13](#id-section4) . 
-* [Page 5: 2017-02-15](#id-section5). 
+* [Page 3: 2017-02-08](#id-section3). Transcriptomics
+* [Page 4: 2017-02-13](#id-section4) . RNAseq mapping
+* [Page 5: 2017-02-15](#id-section5). SNPs and Population genetics
 * [Page 6: 2017-02-22](#id-section6). DESEQ 2 Tutorial
 * [Page 7: 2017-02-27](#id-section7). Scott Edwards and Differential Expression Analysis
 * [Page 8: 2017-03-01](#id-section8). Differential expression - Catch up Day
@@ -25,18 +25,18 @@ Notes from class material,and class project will populate this notebook.
 * [Page 10:2017-03-08](#id-section10).Effective population size
 * [Page 11:2017-03-08](#id-section11). R script for homework 2
 * [Page 12:2017-03-20](#id-section12). Population genetic structure
-* [Page 13:2017-27-03](#id-section13). Species Divergence
-* [Page 14 :2017-29-03](#id-section14). Identifying local adaptation
-* [Page 15:2017-3-04](#id-section15).Fst
-* [Page 16:2017-04-04](#id-section16).HW #3 Notes
-* [Page 17:2017-05-04](#id-section17).Assignment 3 R code
-* [Page 18:2017-10-04](#id-section18). Metagenomics
-* [Page 19:2017-12-04](#id-section19).Microbiome
-* [Page 20:2017-12-04](#id-section20).Review of Pipeline
-* [Page 21:2017-19-04](#id-section21).Microbiome
-* [Page 22:2017-02-05](#id-section22).Final Project Script
-* [Page 23:](#id-section23).
-* [Page 24:](#id-section24).
+* [Page 13:2017-22-03](#id-section13). Population Genetic Structure
+* [Page 14 :2017-27-03](#id-section14). Species Divergence
+* [Page 15:2017-29-03](#id-section15).Identifying local adaptation
+* [Page 16:2017-03-04](#id-section16).Fst
+* [Page 17:2017-04-04](#id-section17).HW #3 notes
+* [Page 18:2017-05-04](#id-section18). Assignment 3 R code
+* [Page 19:2017-10-04](#id-section19).Metagenomics
+* [Page 20:2017-12-04](#id-section20).Microbiome
+* [Page 21:2017-12-04](#id-section21).Review of Pipeline
+* [Page 22:2017-17-04](#id-section22).Microbiome
+* [Page 23:2017-19-04](#id-section23).Microbiome
+* [Page 24:2017-02-05](#id-section24).Final Project Script
 * [Page 25:](#id-section25).
 * [Page 26:](#id-section26).
 * [Page 27:](#id-section27).
@@ -373,6 +373,8 @@ Primary problems
 ### Page 4:    
 
 Missed class this day
+
+Tutorials and scripts can be found [here](https://adnguyen.github.io/2017_Ecological_Genomics/Tutorial/2017-02-13_RNAseq_Mapping.html).
 
 
 
@@ -1417,6 +1419,115 @@ points(0.2500000,0.2415350,col="red", fill="red", cex=2)
 <div id='id-section13'/>
 ### Page 13:
 
+Start by looking at nucleotide diversity at synonymous sites and the ration of piN/piS
+
+```
+cd /data/project_data/snps/reads2snps
+head SSW_by24inds.txt.fas
+tail SSW_by24inds.txt.fas
+
+```
+
+
+
+The next command will takes a long time so set screen and run in background 
+
+```
+screen
+/data/popgen/dNdSpiNpiS_1.0 -alignment_file=SSW_by24inds.txt.fas -ingroup=sp -out=~/dNdSpiNpiS_output
+
+```
+
+This command calls the program that we will use, what file to use, "ingroup=sp" means we only have 1 species (no outgroup), out is what we want to save the file as
+
+Detach from the screen
+
+```
+Ctrl+A+D
+
+```
+
+Let's look at an example while we wait...
+
+```
+cat SSW_bamlist.txt.sum
+
+```
+
+Interpreting this file:
+
+- High values mean more homozygosity (vary from 0-1)
+- Our population looks like it is randomly mating
+
+```
+piS: 0.00585312 [0.005172; 0.006598]
+piN: 0.00154546 [0.00133; 0.001782]
+ave. piN/piS: 0.264041 [0.223914; 0.310575]
+
+```
+
+Grab the Romiguier file and move to desktop to open in R
+
+```
+Rom <- read.csv("Romiguier_nature13685-s3.csv", header=T)
+
+```
+
+Data check
+
+```
+str(Rom) 
+head(Rom)
+```
+
+Now lets make a plot that shows the purifying selection vs effective pop size
+
+```
+plot(log(Rom$piS), log(Rom$piNpiS), pch=21, bg="blue", xlab="log Synonymous Nucleotide Diversity (piS)", ylab="log Ratio of Nonysn to Syn Diversity (piN/piS)", main="Purifying Selection vs. Effective Population Size")
+
+```
+
+you can add points to any plot by using this points command; we will add our values to the plot now:
+
+```
+points(log(0.00585312), log(0.264041), pch=24, cex=1.5, bg="red") 
+
+```
+
+so we added the PiS value and then the piN/piS then told it what we wanted the point to look at
+
+the sea stars fall in the middle
+
+Now we will add a best fit line; this is just using Rom data
+
+```
+reg <- lm(log(Rom$piNpiS) ~ log(Rom$piS)) # Fits a linear regression
+abline(reg) # adds the regression line to the plot
+
+```
+
+It would be nice to know which data points are similar species (other echinoderms) to our sea stars
+
+```
+echino <- Rom[which(Rom$Phylum=="Echinodermata"),] # subsets the data
+points(log(echino$piS), log(echino$piNpiS), pch=21, bg="red") # adds the points
+
+```
+
+They are fairly spread out but there is a cluster around our sea star 
+
+```
+legend("bottomleft", cex=1, legend=c("Metazoans", "Echinoderms", "P. ochraceus"), pch=c(21,21,24), col=c("blue", "red", "red"))
+```
+
+
+
+
+
+------
+<div id='id-section14'/>
+### Page 14:
+
 Info Update: Species divergence with gene flow
 
 
@@ -1444,8 +1555,6 @@ Limitations
 - Throw out data
 - Requires many genomes
 - Same Fst values can be interpreted in multiple ways
-
-
 
 Likelihood/model-based methods
 
@@ -1535,7 +1644,6 @@ cat SSW_bamlist.txt.sum
     - To compare our values to other metazoans.... download info from Romiguier paper
 
 ```
-
 /data/project_data/snps/reads2snps/Romiguier_nature13685-s3.csv
 ```
 
@@ -1583,8 +1691,8 @@ legend("bottomleft", cex=1, legend=c("Metazoans", "Echinoderms", "P. ochraceus")
 
 
 ------
-<div id='id-section14'/>
-### Page 14:
+<div id='id-section15'/>
+### Page 15:
 
 Pr(G|K,Q,P)
 
@@ -1597,8 +1705,6 @@ Cross validation
 
 - build a model based on a subset of individuals and cross check your model for the individuals you left out
 - Can use these data to perform a cross validation analysis and select the model that has the least amount of error
-
-
 
 There is a particular format to run ADMIXTURE
 
@@ -1672,9 +1778,18 @@ done
 
 
 
+
+
+  ```
+
+
+  
+
+  ```
+
 ------
-<div id='id-section15'/>
-### Page 15:
+<div id='id-section16'/>
+### Page 16:
 
 Concepts:
 
@@ -1734,47 +1849,61 @@ F statistics
   library(qvalue)
   ```
 
-
-  #Read in your geno file
+# Read in your geno file
 
   ssw.geno_in <- read.fwf("SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.geno", 
-                          width=rep(1,24))
+
+```
+                      width=rep(1,24))
+```
+
   ssw.geno <- t(ssw.geno_in)
 
-
-  #read in the metadata
+# read in the metadata
 
   ssw_meta <- read.table("ssw_healthloc.txt", header=TRUE)
   ssw_meta <- ssw_meta[order(ssw_meta$Individual),]
   ssw_meta$Trajectory[which(ssw_meta$Trajectory=='MM')] = NA
 
   OF_SNPs <- MakeDiploidFSTMat(ssw.geno,locusNames=seq(1,5317,1) , 
-                               popNames=ssw_meta$Trajectory)
+
+```
+                           popNames=ssw_meta$Trajectory)
+```
 
   dim(OF_SNPs)
 
   head(OF_SNPs)
 
   OF_out <- OutFLANK(FstDataFrame = OF_SNPs, LeftTrimFraction = 0.05, 
-                     RightTrimFraction = 0.05, Hmin = 0.1, NumberOfSamples = 3, 
-                     qthreshold = 0.1)
+
+```
+                 RightTrimFraction = 0.05, Hmin = 0.1, NumberOfSamples = 3, 
+                 qthreshold = 0.1)
+```
 
   OutFLANKResultsPlotter(OF_out, withOutliers = T, NoCorr = T, Hmin = 0.1, 
-                         binwidth = 0.005, titletext = "Scan for local selection")
-  #find your outliers
+
+```
+                     binwidth = 0.005, titletext = "Scan for local selection")
+```
+
+# find your outliers
 
   outliers <- which(OF_out$results$OutlierFlag=="TRUE")
   outliers
 
-  #we can extract info about the outliers by reading in the vcf file and looking at the annotations
+# we can extract info about the outliers by reading in the vcf file and looking at the annotations
+
   vcf1 <- read.vcfR("SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf")
   vcfann <- as.data.frame(getFIX(vcf1))
   vcfann[outliers,]
-  ```
 
+```
   Command line 
 
-  ```
+```
+
   [lashlock@pbio381 ~]$ cd /data/project_data/snps/reads2snps/
   [lashlock@pbio381 reads2snps]$ ll
   total 436360
@@ -1841,20 +1970,9 @@ F statistics
   -bash: cd: /data/project_data/assembly/08-11-35-36_cl20_longest_orfs_gene.cds: Not a directory
   [lashlock@pbio381 ~]$ vim /data/project_data/assembly/08-11-35-36_cl20_longest_orfs_gene.cds
 
-  ```
-
-  We searched in the cds file to find the outliers we found in our OutFLANK analysis
-
-  Then we blasted the sequence on NCBI 
-
-  
-
-
-  ```
-
 ------
-<div id='id-section16'/>
-### Page 16:
+<div id='id-section17'/>
+### Page 17:
 
 - Copied original unfiltered vcf file into my home directory.... will try a few different filtering approaches
 - filter for biallelic snps
@@ -1983,8 +2101,8 @@ Next step is to recreate your vcf files removing the mm individuals
 
 
 ------
-<div id='id-section17'/>
-### Page 17:
+<div id='id-section18'/>
+### Page 18:
 
 R Script for Assignment 3
 
@@ -2071,8 +2189,8 @@ gl2.0$loc.names[which(abs(pca2.0$loadings)>quantile(abs(pca2.0$loadings), 0.999)
 
 
 ------
-<div id='id-section18'/>
-### Page 18:
+<div id='id-section19'/>
+### Page 19:
 
 Use 16s Amplicon sequencing to perform metagenomic analyses
 
@@ -2570,17 +2688,17 @@ Counts/sample detail:
 
 Now we are going to look at the diversity of our samples this takes a long time so we will set a screen
 
-------
-<div id='id-section19'/>
-### Page 19:
-
-More microbiome stuff
-
 
 
 ------
 <div id='id-section20'/>
 ### Page 20:
+
+More microbiome stuff
+
+------
+<div id='id-section21'/>
+### Page 21:
 
 1. 1. Review of pipeline
 
@@ -2632,9 +2750,19 @@ Databases
 - UniProt
   - proteins and their associated terms
 
+
+
 ------
-<div id='id-section21'/>
-### Page 21:
+<div id='id-section22'/>
+### Page 22:
+
+
+
+
+
+------
+<div id='id-section23'/>
+### Page 23:
 
 Info update: Rarefying microbiome data is not acceptable
 
@@ -2673,7 +2801,7 @@ Working with picrust
 filter_otus_from_otu_table.py -i ~/16s_analysis/otu_table_mc2_w_tax_no_pynast_failures_no_chimeras_frequency_filtered.biom -o ~/16s_analysis/closed_otu_table.biom --negate_ids_to_exclude -e /usr/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta 
 ```
 
-2. How many OTUs do we have?
+1. How many OTUs do we have?
 
 ```
 Num samples: 176
@@ -2692,26 +2820,28 @@ Counts/sample summary:
 
 ```
 
-3. Normalize by copy number of the 16s gene
+1. Normalize by copy number of the 16s gene
 
 ```
 normalize_by_copy_number.py -i ~/16s_analysis/closed_otu_table.biom -o ~/16s_analysis/closed_otu_table_norm.biom
 ```
 
-4. Predicting metagenomes
+1. Predicting metagenomes
    1. output text file
 
 ```
 predict_metagenomes.py -f -i ~/16s_analysis/closed_otu_table_norm.biom -o ~/16s_analysis/metagenome_predictions.txt -a nsti_per_sample.txt 
 ```
 
-	2. output biom file
+```
+2. output biom file
+```
 
 ```
 predict_metagenomes.py -i ~/16s_analysis/closed_otu_table_norm.biom -o ~/16s_analysis/metagenome_predictions.biom -a nsti_per_sample.txt
 ```
 
-5. Count the rows in your .txt file to see how many KEGG Orthology terms that were predicted
+1. Count the rows in your .txt file to see how many KEGG Orthology terms that were predicted
 
 ```
 wc -l metagenome_predictions.txt
@@ -2719,19 +2849,19 @@ wc -l metagenome_predictions.txt
 
 6910 metagenome_predictions.txt
 
-6. Collapse your results to a higher KO heirarchy term
+1. Collapse your results to a higher KO heirarchy term
 
 ```
 categorize_by_function.py -f -i metagenome_predictions.biom -c KEGG_Pathways -l 3 -o metagenome_predictions.L3.txt
 ```
 
-7. Do this for the biom file as well
+1. Do this for the biom file as well
 
 ```
 categorize_by_function.py -i metagenome_predictions.biom -c KEGG_Pathways -l 3 -o metagenome_predictions.L3.biom
 ```
 
-8. You can run the summarize command again to get an idea of how many terms you have left and then  move the biom file to your computer and run analyses in R
+1. You can run the summarize command again to get an idea of how many terms you have left and then  move the biom file to your computer and run analyses in R
 
 ```
 library("phyloseq"); packageVersion("phyloseq")
@@ -2771,16 +2901,17 @@ write.table(final_pheno_sigtab, "Final_pheno_L3.txt", sep="\t")
 
 
 
+
+
 ------
-<div id='id-section22'/>
-### Page 22:
+<div id='id-section24'/>
+### Page 24:
 
 Final Project R Script
 
 
 
 ```
-
 #FinalProj Script
 
 #load in libraries
@@ -3149,14 +3280,6 @@ plotCounts(ddsLoc, gene="TRINITY_DN39328_c5_g1_TRINITY_DN39328_c5_g1_i1_g.8543_m
 
 
 
-
-
-------
-<div id='id-section23'/>
-### Page 23:
-------
-<div id='id-section24'/>
-### Page 24:
 ------
 <div id='id-section25'/>
 ### Page 25:
